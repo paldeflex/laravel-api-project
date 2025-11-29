@@ -21,7 +21,6 @@ class ProductFactory extends Factory
             'quantity' => $this->faker->randomDigit(),
             'price' => $this->faker->randomNumber(),
             'status' => $this->faker->randomElement(ProductStatus::cases()),
-
         ];
     }
 }

@@ -13,7 +13,7 @@ class ProductImage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'path'
+        'path',
     ];
 
     public function product(): BelongsTo
