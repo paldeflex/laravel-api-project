@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\ProductStatus;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -26,10 +27,12 @@ class ProductController extends Controller
         //
     }
 
-    public function show(Product $product): ProductResource
+    public function show(Product $product): JsonResponse|ProductResource
     {
+
+        // TODO: Перенести в middleware
         if ($product->status === ProductStatus::Draft) {
-            abort(404);
+            return response()->json(['message' => 'Товар не найден'], 404);
         }
 
         $product->loadAvg('productReviews', 'rating')
