@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ProductStatus;
-use App\Http\Resources\ProductResource;
+use App\Http\Resources\ProductDetailResource;
+use App\Http\Resources\ProductListResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class ProductController extends Controller
             ->with('productImages')
             ->paginate(100);
 
-        return ProductResource::collection($products);
+        return ProductListResource::collection($products);
     }
 
     public function store(Request $request)
@@ -27,19 +28,17 @@ class ProductController extends Controller
         //
     }
 
-    public function show(Product $product): JsonResponse|ProductResource
+    public function show(Product $product): ProductDetailResource|JsonResponse
     {
-
         // TODO: Перенести в middleware
         if ($product->status === ProductStatus::Draft) {
             return response()->json(['message' => 'Товар не найден'], 404);
         }
 
         $product->loadAvg('productReviews', 'rating')
-            ->load('productImages');
+                ->load('productImages', 'productReviews');
 
-
-        return new ProductResource($product);
+        return new ProductDetailResource($product);
     }
 
     public function update(Request $request, string $id)
