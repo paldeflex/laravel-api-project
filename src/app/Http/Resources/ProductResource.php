@@ -20,6 +20,7 @@ class ProductResource extends JsonResource
           'rating' => $this->product_reviews_avg_rating !== null
               ? round((float) $this->product_reviews_avg_rating, 1)
               : null,
+          'images' => $this->whenLoaded('productImages', fn () => $this->productImages->pluck('path')),
         ];
     }
 }

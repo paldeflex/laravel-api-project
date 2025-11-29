@@ -13,6 +13,7 @@ class ProductController extends Controller
     {
         $products = Product::query()
             ->withAvg('productReviews', 'rating')
+            ->with('productImages')
             ->paginate(100);
 
         return ProductResource::collection($products);
