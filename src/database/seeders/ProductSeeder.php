@@ -3,12 +3,20 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
+use App\Models\ProductReview;
 use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        Product::factory()->count(20)->create();
+        Product::factory()
+            ->count(10)
+            ->has(
+                ProductReview::factory()
+                    ->count(3),
+                'reviews'
+            )
+            ->create();
     }
 }
