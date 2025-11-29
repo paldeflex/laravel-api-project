@@ -11,8 +11,7 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        Product::factory()
-            ->count(10)
+        Product::factory(10)
             ->has(ProductReview::factory(5))
             ->has(ProductImage::factory(5))
             ->create();
