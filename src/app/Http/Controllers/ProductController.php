@@ -24,9 +24,13 @@ class ProductController extends Controller
         //
     }
 
-    public function show(string $id)
+    public function show(Product $product): ProductResource
     {
-        //
+        $product->loadAvg('productReviews', 'rating')
+            ->load('productImages');
+
+
+        return new ProductResource($product);
     }
 
     public function update(Request $request, string $id)
