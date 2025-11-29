@@ -13,16 +13,8 @@ class ProductSeeder extends Seeder
     {
         Product::factory()
             ->count(10)
-            ->has(
-                ProductReview::factory()
-                    ->count(3),
-                'reviews'
-            )
-            ->has(
-                ProductImage::factory()
-                    ->count(2),
-                'images'
-            )
+            ->has(ProductReview::factory(5))
+            ->has(ProductImage::factory(5))
             ->create();
     }
 }

@@ -31,12 +31,12 @@ class Product extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function reviews(): HasMany
+    public function productReviews(): HasMany
     {
         return $this->hasMany(ProductReview::class);
     }
 
-    public function images(): HasMany
+    public function productImages(): HasMany
     {
         return $this->hasMany(ProductImage::class);
     }
