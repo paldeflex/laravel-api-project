@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\ProductReview;
 use Illuminate\Database\Seeder;
 
@@ -16,6 +17,11 @@ class ProductSeeder extends Seeder
                 ProductReview::factory()
                     ->count(3),
                 'reviews'
+            )
+            ->has(
+                ProductImage::factory()
+                    ->count(2),
+                'images'
             )
             ->create();
     }
