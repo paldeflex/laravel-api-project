@@ -6,7 +6,9 @@ use App\Enums\ProductStatus;
 use App\Http\Requests\StoreProductReviewRequest;
 use App\Http\Resources\ProductReviewResource;
 use App\Models\Product;
+use App\Models\ProductReview;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 
 class ProductReviewController extends Controller
 {
@@ -28,5 +30,18 @@ class ProductReviewController extends Controller
         $review->save();
 
         return new ProductReviewResource($review);
+    }
+
+    // TODO: Добавить политику: отзыв может удалить только автор отзыва и админ
+    public function destroy(Product $product, ProductReview $review): JsonResponse
+    {
+        // TODO: Перенести в middleware
+        if ($review->product_id !== $product->id) {
+            return response()->json(['message' => 'Доступ запрещён'], 403);
+        }
+
+        $review->delete();
+        return response()->json(null, 204);
+
     }
 }
