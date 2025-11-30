@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ProductStatus;
+use App\Http\Requests\StoreProductRequest;
 use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductListResource;
 use App\Models\Product;
@@ -24,7 +25,7 @@ class ProductController extends Controller
     }
 
     // TODO: когда сделаю авторизацию, добавить user_id
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
         $product = Product::create($request->all());
 
