@@ -12,7 +12,6 @@ use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller
 {
-
     public function index()
     {
         $products = Product::query()
@@ -40,7 +39,7 @@ class ProductController extends Controller
         }
 
         $product->loadAvg('productReviews', 'rating')
-                ->load('productImages', 'productReviews');
+            ->load('productImages', 'productReviews');
 
         return new ProductDetailResource($product);
     }
