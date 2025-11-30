@@ -12,7 +12,6 @@ use Illuminate\Http\JsonResponse;
 
 class ProductReviewController extends Controller
 {
-
     public function store(StoreProductReviewRequest $request, Product $product)
     {
         // TODO: Перенести в middleware
@@ -41,6 +40,7 @@ class ProductReviewController extends Controller
         }
 
         $review->delete();
+
         return response()->json(null, 204);
 
     }

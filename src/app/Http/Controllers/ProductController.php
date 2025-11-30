@@ -65,7 +65,7 @@ class ProductController extends Controller
 
     private function handleImages(Product $product, Request $request): void
     {
-        if (!$request->hasFile('images')) {
+        if (! $request->hasFile('images')) {
             return;
         }
 
