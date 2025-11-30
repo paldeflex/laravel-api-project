@@ -21,6 +21,8 @@ class UpdateProductRequest extends FormRequest
             'quantity' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'price' => ['sometimes', 'integer', 'min:0'],
             'status' => ['sometimes', Rule::enum(ProductStatus::class)],
+            'images' => ['sometimes', 'array'],
+            'images.*' => ['file', 'image', 'max:5120'],
         ];
     }
 }

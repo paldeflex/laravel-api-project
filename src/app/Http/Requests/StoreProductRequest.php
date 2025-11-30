@@ -21,6 +21,8 @@ class StoreProductRequest extends FormRequest
             'quantity' => ['nullable', 'integer', 'min:0'],
             'price' => ['nullable', 'integer', 'min:0'],
             'status' => ['nullable', Rule::enum(ProductStatus::class)],
+            'images' => ['nullable', 'array'],
+            'images.*' => ['file', 'image', 'max:5120'],
         ];
     }
 }

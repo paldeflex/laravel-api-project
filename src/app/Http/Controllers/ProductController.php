@@ -9,6 +9,7 @@ use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductListResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -26,7 +27,9 @@ class ProductController extends Controller
     // TODO: когда сделаю авторизацию, добавить user_id
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create($request->all());
+        $product = Product::create($request->validated());
+        $this->handleImages($product, $request);
+        $product->load('productImages');
 
         return new ProductDetailResource($product);
     }
@@ -47,6 +50,8 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product): ProductDetailResource
     {
         $product->update($request->validated());
+        $this->handleImages($product, $request);
+        $product->load('productImages');
 
         return new ProductDetailResource($product);
     }
@@ -56,5 +61,20 @@ class ProductController extends Controller
         $product->delete();
 
         return response()->json(null, 204);
+    }
+
+    private function handleImages(Product $product, Request $request): void
+    {
+        if (!$request->hasFile('images')) {
+            return;
+        }
+
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('products/'.$product->id, 'public');
+
+            $product->productImages()->create([
+                'path' => $path,
+            ]);
+        }
     }
 }
