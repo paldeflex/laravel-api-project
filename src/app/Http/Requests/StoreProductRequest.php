@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ProductStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
@@ -18,6 +20,7 @@ class StoreProductRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:3000'],
             'quantity' => ['nullable', 'integer', 'min:0'],
             'price' => ['nullable', 'integer', 'min:0'],
+            'status' => ['nullable', Rule::enum(ProductStatus::class)],
         ];
     }
 }
