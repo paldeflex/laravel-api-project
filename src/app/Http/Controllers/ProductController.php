@@ -23,9 +23,12 @@ class ProductController extends Controller
         return ProductListResource::collection($products);
     }
 
+    // TODO: когда сделаю авторизацию, добавить user_id
     public function store(Request $request)
     {
-        //
+        $product = Product::create($request->all());
+
+        return new ProductDetailResource($product);
     }
 
     public function show(Product $product): ProductDetailResource|JsonResponse
