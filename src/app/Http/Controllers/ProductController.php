@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Enums\ProductStatus;
 use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductListResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -45,9 +45,11 @@ class ProductController extends Controller
         return new ProductDetailResource($product);
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateProductRequest $request, Product $product): ProductDetailResource
     {
-        //
+        $product->update($request->validated());
+
+        return new ProductDetailResource($product);
     }
 
     public function destroy(Product $product): JsonResponse
