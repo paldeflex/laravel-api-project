@@ -24,10 +24,12 @@ class ProductController extends Controller
         return ProductListResource::collection($products);
     }
 
-    // TODO: добавить на auth()->id() после реализации авторизации
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create($request->validated());
+        $productData = $request->validated();
+        $productData['user_id'] = auth()->id();
+
+        $product = Product::create($productData);
         $this->handleImages($product, $request);
         $product->load('productImages');
 

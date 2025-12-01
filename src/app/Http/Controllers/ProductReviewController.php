@@ -19,11 +19,8 @@ class ProductReviewController extends Controller
             return response()->json(['message' => 'Товар не найден'], 404);
         }
 
-        // TODO: заменить на auth()->id() после реализации авторизации
-        $user = User::inRandomOrder()->first();
-
         $review = $product->productReviews()->make();
-        $review->user_id = $user->id;
+        $review->user_id = auth()->id();
         $review->text = $request->text;
         $review->rating = $request->rating;
         $review->save();
