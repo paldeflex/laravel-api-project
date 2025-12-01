@@ -9,10 +9,10 @@ Route::apiResource('products', ProductController::class)
 
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('products', ProductController::class)
-        ->only(['store', 'update', 'destroy']);
+        ->only(['store', 'update', 'destroy'])->middleware('admin');
 
     Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store']);
-    Route::delete('/products/{product}/reviews/{review}', [ProductReviewController::class, 'destroy']);
+    Route::delete('/products/{product}/reviews/{review}', [ProductReviewController::class, 'destroy'])->middleware('admin');
 });
 
 Route::post('register', [AuthController::class, 'register']);
