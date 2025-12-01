@@ -17,6 +17,7 @@ class ProductReviewController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('product.published', only: ['store']),
+            new Middleware('review.belongs-to-product', only: ['destroy']),
         ];
     }
 
@@ -34,11 +35,6 @@ class ProductReviewController extends Controller implements HasMiddleware
     // TODO: Добавить политику: отзыв может удалить только автор отзыва и админ
     public function destroy(Product $product, ProductReview $review): JsonResponse
     {
-        // TODO: Перенести в middleware
-        if ($review->product_id !== $product->id) {
-            return response()->json(['message' => 'Доступ запрещён'], 403);
-        }
-
         $review->delete();
 
         return response()->json(null, 204);
