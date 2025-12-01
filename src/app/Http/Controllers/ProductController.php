@@ -10,9 +10,18 @@ use App\Http\Resources\ProductListResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('product.published', only: ['show']),
+        ];
+    }
+
     public function index()
     {
         $products = Product::query()
@@ -38,11 +47,6 @@ class ProductController extends Controller
 
     public function show(Product $product): ProductDetailResource|JsonResponse
     {
-        // TODO: Перенести в middleware
-        if ($product->status === ProductStatus::Draft) {
-            return response()->json(['message' => 'Товар не найден'], 404);
-        }
-
         $product->loadAvg('productReviews', 'rating')
             ->load('productImages', 'productReviews');
 

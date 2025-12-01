@@ -8,16 +8,20 @@ use App\Http\Resources\ProductReviewResource;
 use App\Models\Product;
 use App\Models\ProductReview;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ProductReviewController extends Controller
+class ProductReviewController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('product.published', only: ['store']),
+        ];
+    }
+
     public function store(StoreProductReviewRequest $request, Product $product)
     {
-        // TODO: Перенести в middleware
-        if ($product->status === ProductStatus::Draft) {
-            return response()->json(['message' => 'Товар не найден'], 404);
-        }
-
         $review = $product->productReviews()->make();
         $review->user_id = auth()->id();
         $review->text = $request->text;
