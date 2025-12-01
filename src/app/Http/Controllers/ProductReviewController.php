@@ -7,7 +7,6 @@ use App\Http\Requests\StoreProductReviewRequest;
 use App\Http\Resources\ProductReviewResource;
 use App\Models\Product;
 use App\Models\ProductReview;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 
 class ProductReviewController extends Controller
