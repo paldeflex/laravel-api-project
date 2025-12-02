@@ -21,7 +21,7 @@ class ProductReviewController extends Controller implements HasMiddleware
         ];
     }
 
-    public function store(StoreProductReviewRequest $request, Product $product)
+    public function store(StoreProductReviewRequest $request, Product $product): ProductReviewResource
     {
         $review = $product->productReviews()->make();
         $review->user_id = auth()->id();
@@ -32,7 +32,7 @@ class ProductReviewController extends Controller implements HasMiddleware
         return new ProductReviewResource($review);
     }
 
-    public function update(UpdateProductReviewRequest $request, Product $product, ProductReview $review)
+    public function update(UpdateProductReviewRequest $request, Product $product, ProductReview $review): ProductReviewResource
     {
         $this->authorize('update', $review);
 

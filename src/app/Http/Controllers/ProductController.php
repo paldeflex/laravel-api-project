@@ -10,6 +10,7 @@ use App\Http\Resources\ProductListResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
@@ -22,7 +23,7 @@ class ProductController extends Controller implements HasMiddleware
         ];
     }
 
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
         $products = Product::query()
             ->where('status', ProductStatus::Published)
@@ -33,7 +34,8 @@ class ProductController extends Controller implements HasMiddleware
         return ProductListResource::collection($products);
     }
 
-    public function store(StoreProductRequest $request)
+
+    public function store(StoreProductRequest $request): ProductDetailResource
     {
         $productData = $request->validated();
         $productData['user_id'] = auth()->id();
@@ -45,7 +47,7 @@ class ProductController extends Controller implements HasMiddleware
         return new ProductDetailResource($product);
     }
 
-    public function show(Product $product): ProductDetailResource|JsonResponse
+    public function show(Product $product): ProductDetailResource
     {
         $product->loadAvg('productReviews', 'rating')
             ->load('productImages', 'productReviews');
