@@ -12,7 +12,8 @@ Route::middleware('auth:api')->group(function () {
         ->only(['store', 'update', 'destroy'])->middleware('admin');
 
     Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store']);
-    Route::delete('/products/{product}/reviews/{review}', [ProductReviewController::class, 'destroy'])->middleware('admin');
+    Route::delete('/products/{product}/reviews/{review}', [ProductReviewController::class, 'destroy']);
+    Route::patch('/products/{product}/reviews/{review}', [ProductReviewController::class, 'update']);
 });
 
 Route::post('register', [AuthController::class, 'register']);

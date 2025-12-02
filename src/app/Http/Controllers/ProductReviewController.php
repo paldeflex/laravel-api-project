@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ProductStatus;
 use App\Http\Requests\StoreProductReviewRequest;
+use App\Http\Requests\UpdateProductReviewRequest;
 use App\Http\Resources\ProductReviewResource;
 use App\Models\Product;
 use App\Models\ProductReview;
@@ -32,12 +32,21 @@ class ProductReviewController extends Controller implements HasMiddleware
         return new ProductReviewResource($review);
     }
 
-    // TODO: Добавить политику: отзыв может удалить только автор отзыва и админ
+    public function update(UpdateProductReviewRequest $request, Product $product, ProductReview $review)
+    {
+        $this->authorize('update', $review);
+
+        $review->update($request->validated());
+
+        return new ProductReviewResource($review);
+    }
+
     public function destroy(Product $product, ProductReview $review): JsonResponse
     {
+        $this->authorize('delete', $review);
+
         $review->delete();
 
         return response()->json(null, 204);
-
     }
 }
