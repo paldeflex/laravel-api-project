@@ -4,55 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
-use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        protected AuthService $authService,
+    ) {
+    }
+
     public function register(RegisterRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        [$user, $token] = $this->authService->register($request->validated());
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
-
-        $token = auth()->login($user);
-
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-        ], 201);
+        return response()->json(
+            $this->authService->getTokenPayload($token),
+            201
+        );
     }
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $credentials = $request->validated();
+        $token = $this->authService->attemptLogin($request->validated());
 
-        if (! $token = Auth::attempt($credentials)) {
+        if (! $token) {
             return response()->json(['message' => 'Неверные логин или пароль'], 401);
         }
 
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-        ]);
+        return response()->json(
+            $this->authService->getTokenPayload($token)
+        );
     }
 
     public function me(): JsonResponse
     {
-        return response()->json(auth()->user());
+        return response()->json($this->authService->currentUser());
     }
 
     public function logout(): JsonResponse
     {
-        auth()->logout();
+        $this->authService->logout();
 
         return response()->json(['message' => 'Вы вышли из системы']);
     }

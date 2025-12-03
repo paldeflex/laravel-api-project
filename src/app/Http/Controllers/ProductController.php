@@ -2,20 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ProductStatus;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductListResource;
 use App\Models\Product;
+use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
 class ProductController extends Controller implements HasMiddleware
 {
+
+    public function __construct(
+        protected ProductService $productService,
+    ) {
+    }
+
     public static function middleware(): array
     {
         return [
@@ -25,11 +30,7 @@ class ProductController extends Controller implements HasMiddleware
 
     public function index(): AnonymousResourceCollection
     {
-        $products = Product::query()
-            ->where('status', ProductStatus::Published)
-            ->withAvg('productReviews', 'rating')
-            ->with('productImages')
-            ->paginate(100);
+        $products = $this->productService->getPublishedProducts();
 
         return ProductListResource::collection($products);
     }
@@ -37,52 +38,41 @@ class ProductController extends Controller implements HasMiddleware
 
     public function store(StoreProductRequest $request): ProductDetailResource
     {
-        $productData = $request->validated();
-        $productData['user_id'] = auth()->id();
+        $images = $request->hasFile('images') ? $request->file('images') : null;
 
-        $product = Product::create($productData);
-        $this->handleImages($product, $request);
-        $product->load('productImages');
+        $product = $this->productService->createProduct(
+            $request->validated(),
+            auth()->id(),
+            $images
+        );
 
         return new ProductDetailResource($product);
     }
 
     public function show(Product $product): ProductDetailResource
     {
-        $product->loadAvg('productReviews', 'rating')
-            ->load('productImages', 'productReviews');
+        $product = $this->productService->getProductForShow($product);
 
         return new ProductDetailResource($product);
     }
 
     public function update(UpdateProductRequest $request, Product $product): ProductDetailResource
     {
-        $product->update($request->validated());
-        $this->handleImages($product, $request);
-        $product->load('productImages');
+        $images = $request->hasFile('images') ? $request->file('images') : null;
+
+        $product = $this->productService->updateProduct(
+            $product,
+            $request->validated(),
+            $images
+        );
 
         return new ProductDetailResource($product);
     }
 
     public function destroy(Product $product): JsonResponse
     {
-        $product->delete();
+        $this->productService->deleteProduct($product);
 
         return response()->json(null, 204);
-    }
-
-    private function handleImages(Product $product, Request $request): void
-    {
-        if (! $request->hasFile('images')) {
-            return;
-        }
-
-        foreach ($request->file('images') as $image) {
-            $path = $image->store('products/'.$product->id, 'public');
-
-            $product->productImages()->create([
-                'path' => $path,
-            ]);
-        }
     }
 }

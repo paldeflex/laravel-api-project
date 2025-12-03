@@ -7,12 +7,18 @@ use App\Http\Requests\UpdateProductReviewRequest;
 use App\Http\Resources\ProductReviewResource;
 use App\Models\Product;
 use App\Models\ProductReview;
+use App\Services\ProductReviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
 class ProductReviewController extends Controller implements HasMiddleware
 {
+    public function __construct(
+        protected ProductReviewService $productReviewService,
+    ) {
+    }
+
     public static function middleware(): array
     {
         return [
@@ -23,11 +29,11 @@ class ProductReviewController extends Controller implements HasMiddleware
 
     public function store(StoreProductReviewRequest $request, Product $product): ProductReviewResource
     {
-        $review = $product->productReviews()->make();
-        $review->user_id = auth()->id();
-        $review->text = $request->text;
-        $review->rating = $request->rating;
-        $review->save();
+        $review = $this->productReviewService->createReview(
+            $product,
+            auth()->id(),
+            $request->validated()
+        );
 
         return new ProductReviewResource($review);
     }
@@ -36,7 +42,10 @@ class ProductReviewController extends Controller implements HasMiddleware
     {
         $this->authorize('update', $review);
 
-        $review->update($request->validated());
+        $review = $this->productReviewService->updateReview(
+            $review,
+            $request->validated()
+        );
 
         return new ProductReviewResource($review);
     }
@@ -45,7 +54,7 @@ class ProductReviewController extends Controller implements HasMiddleware
     {
         $this->authorize('delete', $review);
 
-        $review->delete();
+        $this->productReviewService->deleteReview($review);
 
         return response()->json(null, 204);
     }
