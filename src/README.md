@@ -1,59 +1,331 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Небольшой REST API-сервис на Laravel 12 для работы с товарами и отзывами.  
+Поддерживает регистрацию / авторизацию по JWT, роли (админ / обычный пользователь), CRUD по товарам и отзывам и единый JSON-формат ошибок.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Стек
 
-## About Laravel
+- PHP 8.4
+- Laravel 12
+- PostgreSQL (через Docker Compose)
+- JWT (php-open-source-saver/jwt-auth)
+- PHPUnit (feature + unit тесты)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Запуск проекта
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Зависимости
 
-## Learning Laravel
+```bash
+composer install
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 2. Конфиг окружения
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Скопировать `.env`:
 
-## Laravel Sponsors
+```bash
+cp .env.example .env
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Потом в `.env` настроить:
 
-### Premium Partners
+* параметры подключения к БД (`DB_*`)
+* JWT-секрет:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+  ```bash
+  php artisan jwt:secret
+  ```
 
-## Contributing
+### 3. Docker
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Поднять контейнеры:
 
-## Code of Conduct
+```bash
+docker compose up -d
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Выполнить миграции (и, при необходимости, сиды):
 
-## Security Vulnerabilities
+```bash
+docker compose exec php php artisan migrate
+# docker compose exec php php artisan db:seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Запуск сервера
 
-## License
+Локально через artisan:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+docker compose exec php php artisan serve --host=0.0.0.0 --port=8000
+```
+
+API будет доступен по `http://localhost:8000/api`.
+
+---
+
+## Аутентификация
+
+Используется JWT-аутентификация (guard `auth:api`).
+
+### Регистрация
+
+`POST /api/register`
+
+Тело запроса:
+
+```json
+{
+  "name": "User Name",
+  "email": "user@example.com",
+  "password": "secret123",
+  "password_confirmation": "secret123"
+}
+```
+
+Ответ `201 Created`:
+
+```json
+{
+  "access_token": "…",
+  "token_type": "bearer",
+  "expires_in": 3600
+}
+```
+
+### Логин
+
+`POST /api/login`
+
+```json
+{
+  "email": "user@example.com",
+  "password": "secret123"
+}
+```
+
+* Успех → `200 OK` + payload токена (как при регистрации)
+* Ошибка → `401`:
+
+```json
+{ "message": "Неверные логин или пароль" }
+```
+
+### Текущий пользователь
+
+`GET /api/me` (требуется `Authorization: Bearer <token>`)
+
+Возвращает данные текущего пользователя.
+
+### Логаут
+
+`POST /api/logout` (требуется токен)
+
+```json
+{ "message": "Вы вышли из системы" }
+```
+
+---
+
+## Товары
+
+### Публичные эндпоинты
+
+#### Список опубликованных товаров
+
+`GET /api/products`
+
+Возвращает пагинированный список (через `ProductListResource`):
+
+* `id`
+* `name`
+* `description`
+* `quantity`
+* `price`
+* `status`
+* `rating` (средний рейтинг отзывов, округлён до 1 знака)
+* `images` (URL-ы картинок)
+
+#### Просмотр товара
+
+`GET /api/products/{product}`
+
+Работает только для опубликованных товаров (`ProductStatus::Published` + middleware `product.published`).
+
+Возвращает `ProductDetailResource`:
+
+* поля товара
+* `rating`
+* `images`
+* `reviews` (коллекция `ProductReviewResource`)
+
+Для черновика (`draft`) вернётся:
+
+```json
+{
+  "message": "Товар не найден"
+}
+```
+
+с кодом `404`.
+
+### Админ-эндпоинты
+
+Доступны только с JWT токеном и флагом `is_admin = true` (middleware `admin`).
+
+#### Создать товар
+
+`POST /api/products`
+
+Тело (валидация через `StoreProductRequest`):
+
+```json
+{
+  "name": "Название",
+  "description": "Описание",
+  "quantity": 10,
+  "price": 1000,
+  "status": "published",
+  "images": [<files>]
+}
+```
+
+В контроллере данные собираются в DTO `ProductCreateData`, далее работает `ProductService::createProduct()`.
+
+#### Обновить товар
+
+`PATCH /api/products/{product}`
+
+Частичное обновление (валидация через `UpdateProductRequest`).
+
+#### Удалить товар
+
+`DELETE /api/products/{product}`
+
+Мягкое удаление (`SoftDeletes`), код ответа `204 No Content`.
+
+---
+
+## Отзывы
+
+Для всех эндпоинтов отзывов требуется авторизация (JWT).
+
+### Создать отзыв
+
+`POST /api/products/{product}/reviews`
+
+* Работает только для опубликованного товара (`product.published`).
+* Используется `StoreProductReviewRequest` + `ProductReviewCreateData`.
+
+Тело:
+
+```json
+{
+  "text": "Комментарий",
+  "rating": 5
+}
+```
+
+Ответ — `ProductReviewResource`.
+
+### Обновить отзыв
+
+`PATCH /api/products/{product}/reviews/{review}`
+
+* Авторизация: через `ProductReviewPolicy@update`
+* Данные собираются в DTO `ProductReviewUpdateData`
+
+Можно обновить `text` и/или `rating`.
+
+### Удалить отзыв
+
+`DELETE /api/products/{product}/reviews/{review}`
+
+* Авторизация: `ProductReviewPolicy@delete`
+* Доп. проверка: middleware `review.belongs-to-product` (отзыв должен относиться к указанному товару).
+
+При попытке удалить отзыв другого товара:
+
+```json
+{
+  "message": "Доступ запрещён"
+}
+```
+
+с кодом `403`.
+
+---
+
+## Обработка ошибок
+
+В `bootstrap/app.php` настроена централизованная обработка исключений:
+
+* Для `api/*` (и JSON-запросов) **все ошибки возвращаются в JSON-формате**.
+* Основные случаи:
+
+    * Не найден объект (route model binding / `ModelNotFoundException`):
+
+      ```json
+      { "message": "Объект не найден" }
+      ```
+
+      `404 Not Found`
+    * Неавторизован (JWT отсутствует / просрочен / невалиден):
+
+      ```json
+      { "message": "Необходимо авторизоваться" }
+      ```
+
+      `401 Unauthorized`
+    * Нет прав (policy / middleware `admin` и т.п.):
+
+      ```json
+      { "message": "Доступ запрещён" }
+      ```
+
+      `403 Forbidden`
+    * Ошибки валидации (`ValidationException`):
+
+      ```json
+      {
+        "message": "Данные некорректны",
+        "errors": {
+          "field": ["Сообщение об ошибке"]
+        }
+      }
+      ```
+
+      `422 Unprocessable Entity`
+    * Любое непойманное исключение:
+
+      ```json
+      { "message": "Внутренняя ошибка сервера" }
+      ```
+
+      `500 Internal Server Error`
+
+---
+
+## Тесты
+
+Тесты лежат в `tests/Feature` и `tests/Unit`.
+
+* **Feature-тесты**:
+
+    * `AuthControllerTest` — регистрация, логин, me, logout.
+    * `ProductControllerTest` — публичный список/просмотр, права админа, рейтинг, доступ к черновикам.
+    * `ProductReviewControllerTest` — создание/обновление/удаление отзывов, политика и мидлвары.
+
+* **Unit-тесты**:
+
+    * `ProductServiceTest` — выборка опубликованных товаров, работа с картинками, soft delete.
+    * `ProductReviewServiceTest` — создание/обновление/удаление отзывов через сервис.
+    * При необходимости можно добавить отдельные тесты на политику и middleware.
+
+Запуск тестов:
+
+```bash
+docker compose exec php php artisan test
+# или
+docker compose exec php ./vendor/bin/phpunit
+```
+
+---
