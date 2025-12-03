@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\ProductReviewCreateData;
+use App\DTO\ProductReviewUpdateData;
 use App\Http\Requests\StoreProductReviewRequest;
 use App\Http\Requests\UpdateProductReviewRequest;
 use App\Http\Resources\ProductReviewResource;
@@ -29,22 +31,37 @@ class ProductReviewController extends Controller implements HasMiddleware
 
     public function store(StoreProductReviewRequest $request, Product $product): ProductReviewResource
     {
+        $data = $request->validated();
+
+        $dto = new ProductReviewCreateData(
+            auth()->id(),
+            $data['text'],
+            $data['rating'] ?? null,
+        );
+
         $review = $this->productReviewService->createReview(
             $product,
-            auth()->id(),
-            $request->validated()
+            $dto
         );
 
         return new ProductReviewResource($review);
     }
 
+
     public function update(UpdateProductReviewRequest $request, Product $product, ProductReview $review): ProductReviewResource
     {
         $this->authorize('update', $review);
 
+        $data = $request->validated();
+
+        $dto = new ProductReviewUpdateData(
+            $data['text'] ?? null,
+            $data['rating'] ?? null,
+        );
+
         $review = $this->productReviewService->updateReview(
             $review,
-            $request->validated()
+            $dto
         );
 
         return new ProductReviewResource($review);

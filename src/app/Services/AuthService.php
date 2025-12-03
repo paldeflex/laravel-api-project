@@ -2,26 +2,31 @@
 
 namespace App\Services;
 
+use App\DTO\LoginData;
+use App\DTO\RegisterData;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
-    public function register(array $data): string
+    public function register(RegisterData $data): string
     {
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'name' => $data->name,
+            'email' => $data->email,
+            'password' => Hash::make($data->password),
         ]);
 
         return Auth::login($user);
     }
 
-    public function attemptLogin(array $credentials): ?string
+    public function attemptLogin(LoginData $credentials): ?string
     {
-        if (! $token = Auth::attempt($credentials)) {
+        if (! $token = Auth::attempt([
+            'email' => $credentials->email,
+            'password' => $credentials->password,
+        ])) {
             return null;
         }
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\LoginData;
+use App\DTO\RegisterData;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
@@ -16,7 +18,15 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request): JsonResponse
     {
-        $token = $this->authService->register($request->validated());
+        $data = $request->validated();
+
+        $dto = new RegisterData(
+            $data['name'],
+            $data['email'],
+            $data['password'],
+        );
+
+        $token = $this->authService->register($dto);
 
         return response()->json(
             $this->authService->getTokenPayload($token),
@@ -26,7 +36,14 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $token = $this->authService->attemptLogin($request->validated());
+        $data = $request->validated();
+
+        $dto = new LoginData(
+            $data['email'],
+            $data['password'],
+        );
+
+        $token = $this->authService->attemptLogin($dto);
 
         if (! $token) {
             return response()->json(['message' => 'Неверные логин или пароль'], 401);

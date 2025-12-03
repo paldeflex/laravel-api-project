@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\ProductCreateData;
+use App\Enums\ProductStatus;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductDetailResource;
@@ -40,8 +42,20 @@ class ProductController extends Controller implements HasMiddleware
     {
         $images = $request->hasFile('images') ? $request->file('images') : null;
 
+        $data = $request->validated();
+
+        $dto = new ProductCreateData(
+            $data['name'],
+            $data['description'] ?? null,
+            $data['quantity'] ?? null,
+            $data['price'] ?? null,
+            isset($data['status'])
+                ? ProductStatus::from($data['status'])
+                : null,
+        );
+
         $product = $this->productService->createProduct(
-            $request->validated(),
+            $dto,
             auth()->id(),
             $images
         );

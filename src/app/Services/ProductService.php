@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\ProductCreateData;
 use App\Enums\ProductStatus;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -18,11 +19,16 @@ class ProductService
             ->paginate(100);
     }
 
-    public function createProduct(array $data, int $userId, ?array $images = null): Product
+    public function createProduct(ProductCreateData $data, int $userId, ?array $images = null): Product
     {
-        $data['user_id'] = $userId;
-
-        $product = Product::create($data);
+        $product = Product::create([
+            'user_id' => $userId,
+            'name' => $data->name,
+            'description' => $data->description,
+            'quantity' => $data->quantity,
+            'price' => $data->price,
+            'status' => $data->status?->value,
+        ]);
 
         if ($images) {
             $this->handleImages($product, $images);

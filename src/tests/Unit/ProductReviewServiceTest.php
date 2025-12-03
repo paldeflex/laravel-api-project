@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\DTO\ProductReviewCreateData;
+use App\DTO\ProductReviewUpdateData;
 use App\Enums\ProductStatus;
 use App\Models\Product;
 use App\Models\ProductReview;
@@ -30,10 +32,14 @@ class ProductReviewServiceTest extends TestCase
 
         $service = new ProductReviewService();
 
-        $review = $service->createReview($product, $user->id, [
-            'text' => 'Nice',
-            'rating' => 5,
-        ]);
+        $review = $service->createReview(
+            $product,
+            new ProductReviewCreateData(
+                $user->id,
+                'Nice',
+                5
+            )
+        );
 
         $this->assertDatabaseHas('product_reviews', [
             'id' => $review->id,
@@ -68,10 +74,13 @@ class ProductReviewServiceTest extends TestCase
 
         $service = new ProductReviewService();
 
-        $updated = $service->updateReview($review, [
-            'text' => 'Updated',
-            'rating' => 4,
-        ]);
+        $updated = $service->updateReview(
+            $review,
+            new ProductReviewUpdateData(
+                'Updated',
+                4
+            )
+        );
 
         $this->assertEquals('Updated', $updated->text);
         $this->assertEquals(4, $updated->rating);
@@ -82,6 +91,7 @@ class ProductReviewServiceTest extends TestCase
             'rating' => 4,
         ]);
     }
+
 
     public function test_delete_review_soft_deletes_record(): void
     {

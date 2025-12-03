@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\DTO\ProductCreateData;
+use App\DTO\ProductReviewCreateData;
 use App\Enums\ProductStatus;
 use App\Models\Product;
 use App\Models\User;
@@ -39,10 +41,15 @@ class ProductServiceTest extends TestCase
         ]);
 
         $reviewService = new ProductReviewService();
-        $reviewService->createReview($published, $user->id, [
-            'text' => 'Ok',
-            'rating' => 4,
-        ]);
+
+        $reviewService->createReview(
+            $published,
+            new ProductReviewCreateData(
+                $user->id,
+                'Ok',
+                4
+            )
+        );
 
         $service = new ProductService();
 
@@ -65,20 +72,20 @@ class ProductServiceTest extends TestCase
 
         $service = new ProductService();
 
-        $data = [
-            'name' => 'New product',
-            'description' => 'Desc',
-            'quantity' => 3,
-            'price' => 300,
-            'status' => ProductStatus::Published,
-        ];
+        $dto = new ProductCreateData(
+            'New product',
+            'Desc',
+            3,
+            300,
+            ProductStatus::Published
+        );
 
         $images = [
             UploadedFile::fake()->create('image1.jpg', 100, 'image/jpeg'),
             UploadedFile::fake()->create('image2.jpg', 100, 'image/jpeg'),
         ];
 
-        $product = $service->createProduct($data, $user->id, $images);
+        $product = $service->createProduct($dto, $user->id, $images);
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
@@ -92,6 +99,7 @@ class ProductServiceTest extends TestCase
             Storage::disk('public')->assertExists($image->path);
         }
     }
+
 
     public function test_update_product_updates_fields_and_appends_images(): void
     {

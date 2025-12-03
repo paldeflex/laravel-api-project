@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\DTO\ProductReviewCreateData;
 use App\Enums\ProductStatus;
 use App\Models\Product;
 use App\Models\User;
@@ -56,19 +57,30 @@ class ProductControllerTest extends TestCase
         ]);
 
         $reviewService = new ProductReviewService();
-        $reviewService->createReview($product, $user->id, [
-            'text' => 'Good',
-            'rating' => 4,
-        ]);
 
-        $reviewService->createReview($product, $user->id, [
-            'text' => 'Great',
-            'rating' => 5,
-        ]);
+        $reviewService->createReview(
+            $product,
+            new ProductReviewCreateData(
+                $user->id,
+                'Good',
+                4
+            )
+        );
+
+        $reviewService->createReview(
+            $product,
+            new ProductReviewCreateData(
+                $user->id,
+                'Great',
+                5
+            )
+        );
 
         $response = $this->getJson('/api/products');
 
         $response->assertOk();
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonPath('data.0.id', $product->id);
         $response->assertJsonPath('data.0.rating', 4.5);
     }
 
@@ -90,10 +102,15 @@ class ProductControllerTest extends TestCase
         ]);
 
         $reviewService = new ProductReviewService();
-        $review = $reviewService->createReview($product, $user->id, [
-            'text' => 'Nice',
-            'rating' => 5,
-        ]);
+
+        $review = $reviewService->createReview(
+            $product,
+            new ProductReviewCreateData(
+                $user->id,
+                'Nice',
+                5
+            )
+        );
 
         $response = $this->getJson('/api/products/'.$product->id);
 
