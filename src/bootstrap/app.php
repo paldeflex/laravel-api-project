@@ -3,14 +3,15 @@
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\EnsureProductIsPublished;
 use App\Http\Middleware\EnsureReviewBelongsToProduct;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -30,36 +31,53 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $exceptions->stopIgnoring(AuthenticationException::class);
+
         $exceptions->render(function (AuthenticationException $e, Request $request) {
-            return response()->json(['message' => 'Необходимо авторизоваться'], 401);
+            return response()->json(
+                ['message' => 'Необходимо авторизоваться'],
+                Response::HTTP_UNAUTHORIZED
+            );
         });
 
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             if ($e->getPrevious() instanceof ModelNotFoundException) {
-                return response()->json(['message' => 'Объект не найден'], 404);
+                return response()->json(
+                    ['message' => 'Объект не найден'],
+                    Response::HTTP_NOT_FOUND
+                );
             }
         });
 
         $exceptions->render(function (ValidationException $e, Request $request) {
-            return response()->json([
-                'message' => 'Данные некорректны',
-                'errors' => $e->errors(),
-            ], 422);
+            return response()->json(
+                [
+                    'message' => 'Данные некорректны',
+                    'errors' => $e->errors(),
+                ],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         });
 
         $exceptions->render(function (HttpException $e, Request $request) {
             $code = $e->getStatusCode();
+
             $msg = match ($code) {
-                403 => 'Доступ запрещён',
-                404 => 'Не найдено',
+                Response::HTTP_FORBIDDEN => 'Доступ запрещён',
+                Response::HTTP_NOT_FOUND => 'Не найдено',
                 default => $e->getMessage() ?: 'Ошибка',
             };
-            return response()->json(['message' => $msg], $code);
+
+            return response()->json(
+                ['message' => $msg],
+                $code
+            );
         });
 
-        // Catch all — 500
         $exceptions->render(function (Throwable $e, Request $request) {
-            return response()->json(['message' => 'Внутренняя ошибка сервера'], 500);
+            return response()->json(
+                ['message' => 'Внутренняя ошибка сервера'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         });
     })
     ->create();
