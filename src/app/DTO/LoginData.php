@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO;
 
 final readonly class LoginData
@@ -8,5 +10,13 @@ final readonly class LoginData
         public string $email,
         public string $password,
     ) {
+    }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            email: $data['email'],
+            password: $data['password'],
+        );
     }
 }

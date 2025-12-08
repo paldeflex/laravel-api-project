@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\DTO\ProductCreateData;
-use App\Enums\ProductStatus;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductDetailResource;
@@ -14,8 +13,6 @@ use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Symfony\Component\HttpFoundation\Response;
 
 final class ProductController extends Controller
@@ -34,21 +31,12 @@ final class ProductController extends Controller
     }
 
 
+
     public function store(StoreProductRequest $request): ProductDetailResource
     {
         $images = $request->hasFile('images') ? $request->file('images') : null;
 
-        $data = $request->validated();
-
-        $dto = new ProductCreateData(
-            name: $data['name'],
-            description: $data['description'] ?? null,
-            quantity: $data['quantity'] ?? null,
-            price: $data['price'] ?? null,
-            status: isset($data['status'])
-                ? ProductStatus::from($data['status'])
-                : null,
-        );
+        $dto = ProductCreateData::fromArray($request->validated());
 
         $product = $this->productService->createProduct(
             $dto,

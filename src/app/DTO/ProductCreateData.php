@@ -16,4 +16,17 @@ final readonly class ProductCreateData
         public ?ProductStatus $status,
     ) {
     }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            name: $data['name'],
+            description: $data['description'] ?? null,
+            quantity: $data['quantity'] ?? null,
+            price: $data['price'] ?? null,
+            status: isset($data['status'])
+                ? ProductStatus::from($data['status'])
+                : null,
+        );
+    }
 }

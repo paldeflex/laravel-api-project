@@ -26,12 +26,9 @@ final class ProductReviewController extends Controller
 
     public function store(StoreProductReviewRequest $request, Product $product): ProductReviewResource
     {
-        $validated = $request->validated();
-
-        $dto = new ProductReviewCreateData(
-            userId: auth()->id(),
-            text: $validated['text'],
-            rating: $validated['rating'] ?? null,
+        $dto = ProductReviewCreateData::fromArray(
+            $request->validated(),
+            auth()->id()
         );
 
         $review = $this->productReviewService->createReview(
@@ -47,12 +44,7 @@ final class ProductReviewController extends Controller
     {
         $this->authorize('update', $review);
 
-        $validated = $request->validated();
-
-        $dto = new ProductReviewUpdateData(
-            text: $validated['text'] ?? null,
-            rating: $validated['rating'] ?? null,
-        );
+        $dto = ProductReviewUpdateData::fromArray($request->validated());
 
         $review = $this->productReviewService->updateReview(
             $review,

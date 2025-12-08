@@ -11,4 +11,12 @@ final readonly class ProductReviewUpdateData
         public ?int    $rating = null,
     ) {
     }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            text: $data['text'] ?? null,
+            rating: $data['rating'] ?? null,
+        );
+    }
 }

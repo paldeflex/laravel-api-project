@@ -21,13 +21,7 @@ final class AuthController extends Controller
 
     public function register(RegisterRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-
-        $dto = new RegisterData(
-            name: $validated['name'],
-            email: $validated['email'],
-            password: $validated['password'],
-        );
+        $dto = RegisterData::fromArray($request->validated());
 
         $token = $this->authService->register($dto);
 
@@ -39,12 +33,7 @@ final class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $credentials = $request->validated();
-
-        $dto = new LoginData(
-            email: $credentials['email'],
-            password: $credentials['password'],
-        );
+        $dto = LoginData::fromArray($request->validated());
 
         $token = $this->authService->login($dto);
 
@@ -53,6 +42,7 @@ final class AuthController extends Controller
             Response::HTTP_OK
         );
     }
+
 
     public function me(): JsonResponse
     {

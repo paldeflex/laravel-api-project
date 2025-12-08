@@ -12,4 +12,13 @@ final readonly class ProductReviewCreateData
         public ?int   $rating,
     ) {
     }
+
+    public static function fromArray(array $data, int $userId): self
+    {
+        return new self(
+            userId: $userId,
+            text: $data['text'],
+            rating: $data['rating'] ?? null,
+        );
+    }
 }
