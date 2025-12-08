@@ -38,9 +38,11 @@ final class ProductController extends Controller
 
         $dto = ProductCreateData::fromArray($request->validated());
 
+        $user = $request->user();
+
         $product = $this->productService->createProduct(
             $dto,
-            auth()->id(),
+            $user->id,
             $images
         );
 

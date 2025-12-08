@@ -26,9 +26,11 @@ final class ProductReviewController extends Controller
 
     public function store(StoreProductReviewRequest $request, Product $product): ProductReviewResource
     {
+        $user = $request->user();
+
         $dto = ProductReviewCreateData::fromArray(
             $request->validated(),
-            auth()->id()
+            $user->id,
         );
 
         $review = $this->productReviewService->createReview(
@@ -38,7 +40,6 @@ final class ProductReviewController extends Controller
 
         return new ProductReviewResource($review);
     }
-
 
     public function update(UpdateProductReviewRequest $request, Product $product, ProductReview $review): ProductReviewResource
     {
