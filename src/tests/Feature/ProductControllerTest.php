@@ -154,7 +154,7 @@ final class ProductControllerTest extends TestCase
         $response
             ->assertStatus(Response::HTTP_NOT_FOUND)
             ->assertJson([
-                'message' => 'Товар не найден',
+                'message' => 'Не найдено',
             ]);
     }
 

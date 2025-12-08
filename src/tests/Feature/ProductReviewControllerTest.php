@@ -71,7 +71,7 @@ final class ProductReviewControllerTest extends TestCase
         $response
             ->assertStatus(404)
             ->assertJson([
-                'message' => 'Товар не найден',
+                'message' => 'Не найдено',
             ]);
     }
 

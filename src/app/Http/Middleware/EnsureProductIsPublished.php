@@ -16,12 +16,10 @@ final class EnsureProductIsPublished
     {
         $product = $request->route('product');
 
-        if ($product instanceof Product && $product->status === ProductStatus::Draft) {
-            return response()->json(
-                ['message' => 'Товар не найден'],
-                Response::HTTP_NOT_FOUND
-            );
-        }
+        abort_if(
+            $product instanceof Product && $product->status === ProductStatus::Draft,
+            Response::HTTP_NOT_FOUND
+        );
 
         return $next($request);
     }

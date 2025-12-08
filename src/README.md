@@ -161,7 +161,7 @@ API будет доступен по `http://localhost:8000/api`.
 
 ```json
 {
-  "message": "Товар не найден"
+  "message": "Не найдено"
 }
 ```
 

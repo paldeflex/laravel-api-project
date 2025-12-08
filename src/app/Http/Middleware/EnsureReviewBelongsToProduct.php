@@ -18,12 +18,10 @@ final class EnsureReviewBelongsToProduct
         $review = $request->route('review');
 
         if ($product instanceof Product && $review instanceof ProductReview) {
-            if ($review->product_id !== $product->id) {
-                return response()->json(
-                    ['message' => 'Доступ запрещён'],
-                    Response::HTTP_FORBIDDEN
-                );
-            }
+            abort_if(
+                $review->product_id !== $product->id,
+                Response::HTTP_FORBIDDEN
+            );
         }
 
         return $next($request);
