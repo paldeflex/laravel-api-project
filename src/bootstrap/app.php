@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Exceptions\InvalidCredentialsException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\EnsureProductIsPublished;
 use App\Http\Middleware\EnsureReviewBelongsToProduct;
@@ -7,6 +10,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,14 +24,15 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(fn ($m) => $m->alias([
+    ->withMiddleware(fn (Middleware $middleware) => $middleware->alias([
         'admin' => AdminMiddleware::class,
         'product.published' => EnsureProductIsPublished::class,
         'review.belongs-to-product' => EnsureReviewBelongsToProduct::class,
     ]))
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->shouldRenderJsonWhen(fn (Request $request, Throwable $e): bool =>
-            $request->is('api/*') || $request->expectsJson()
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request, Throwable $e): bool =>
+                $request->is('api/*') || $request->expectsJson()
         );
 
         $exceptions->stopIgnoring(AuthenticationException::class);
@@ -36,6 +41,13 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json(
                 ['message' => 'Необходимо авторизоваться'],
                 Response::HTTP_UNAUTHORIZED
+            );
+        });
+
+        $exceptions->render(function (InvalidCredentialsException $e, Request $request) {
+            return response()->json(
+                ['message' => $e->getMessage()],
+                $e->getStatusCode()
             );
         });
 

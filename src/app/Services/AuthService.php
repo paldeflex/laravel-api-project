@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DTO\LoginData;
 use App\DTO\RegisterData;
+use App\Exceptions\InvalidCredentialsException;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -23,13 +24,16 @@ final class AuthService
         return Auth::login($user);
     }
 
-    public function attemptLogin(LoginData $credentials): ?string
+
+    public function login(LoginData $credentials): string
     {
-        if (! $token = Auth::attempt([
+        $token = Auth::attempt([
             'email' => $credentials->email,
             'password' => $credentials->password,
-        ])) {
-            return null;
+        ]);
+
+        if (! is_string($token)) {
+            throw new InvalidCredentialsException();
         }
 
         return $token;

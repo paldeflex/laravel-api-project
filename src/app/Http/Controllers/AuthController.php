@@ -46,17 +46,11 @@ final class AuthController extends Controller
             password: $credentials['password'],
         );
 
-        $token = $this->authService->attemptLogin($dto);
-
-        if (! $token) {
-            return response()->json(
-                ['message' => 'Неверные логин или пароль'],
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
+        $token = $this->authService->login($dto);
 
         return response()->json(
-            $this->authService->getTokenPayload($token)
+            $this->authService->getTokenPayload($token),
+            Response::HTTP_OK
         );
     }
 
