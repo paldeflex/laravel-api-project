@@ -18,19 +18,12 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Symfony\Component\HttpFoundation\Response;
 
-final class ProductController extends Controller implements HasMiddleware
+final class ProductController extends Controller
 {
 
     public function __construct(
         private readonly ProductService $productService,
     ) {
-    }
-
-    public static function middleware(): array
-    {
-        return [
-            new Middleware('product.published', only: ['show']),
-        ];
     }
 
     public function index(): AnonymousResourceCollection

@@ -17,19 +17,11 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Symfony\Component\HttpFoundation\Response;
 
-final class ProductReviewController extends Controller implements HasMiddleware
+final class ProductReviewController extends Controller
 {
     public function __construct(
         private readonly ProductReviewService $productReviewService,
     ) {
-    }
-
-    public static function middleware(): array
-    {
-        return [
-            new Middleware('product.published', only: ['store']),
-            new Middleware('review.belongs-to-product', only: ['destroy']),
-        ];
     }
 
     public function store(StoreProductReviewRequest $request, Product $product): ProductReviewResource
