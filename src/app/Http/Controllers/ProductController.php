@@ -21,7 +21,7 @@ final class ProductController extends Controller implements HasMiddleware
 {
 
     public function __construct(
-        protected ProductService $productService,
+        private readonly ProductService $productService,
     ) {
     }
 

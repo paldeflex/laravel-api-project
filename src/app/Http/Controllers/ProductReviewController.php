@@ -19,7 +19,7 @@ use Illuminate\Routing\Controllers\Middleware;
 final class ProductReviewController extends Controller implements HasMiddleware
 {
     public function __construct(
-        protected ProductReviewService $productReviewService,
+        private readonly ProductReviewService $productReviewService,
     ) {
     }
 
