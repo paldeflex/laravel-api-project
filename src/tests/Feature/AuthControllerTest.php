@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 final class AuthControllerTest extends TestCase
@@ -64,7 +65,7 @@ final class AuthControllerTest extends TestCase
         ]);
 
         $response
-            ->assertStatus(401)
+            ->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson([
                 'message' => 'Неверные логин или пароль',
             ]);

@@ -10,6 +10,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 final class AuthController extends Controller
 {
@@ -32,10 +33,9 @@ final class AuthController extends Controller
 
         return response()->json(
             $this->authService->getTokenPayload($token),
-            201
+            Response::HTTP_CREATED
         );
     }
-
 
     public function login(LoginRequest $request): JsonResponse
     {
@@ -49,7 +49,10 @@ final class AuthController extends Controller
         $token = $this->authService->attemptLogin($dto);
 
         if (! $token) {
-            return response()->json(['message' => 'Неверные логин или пароль'], 401);
+            return response()->json(
+                ['message' => 'Неверные логин или пароль'],
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         return response()->json(

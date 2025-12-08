@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Services\ProductReviewService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 final class ProductControllerTest extends TestCase
@@ -151,7 +152,7 @@ final class ProductControllerTest extends TestCase
         $response = $this->getJson('/api/products/'.$product->id);
 
         $response
-            ->assertStatus(404)
+            ->assertStatus(Response::HTTP_NOT_FOUND)
             ->assertJson([
                 'message' => 'Товар не найден',
             ]);
@@ -196,7 +197,7 @@ final class ProductControllerTest extends TestCase
             'status' => ProductStatus::Published->value,
         ]);
 
-        $response->assertStatus(403);
+        $response->assertStatus(Response::HTTP_FORBIDDEN);
     }
 
     public function test_admin_can_update_product(): void

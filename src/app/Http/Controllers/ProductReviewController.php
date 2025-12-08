@@ -15,6 +15,7 @@ use App\Services\ProductReviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 
 final class ProductReviewController extends Controller implements HasMiddleware
 {
@@ -75,6 +76,6 @@ final class ProductReviewController extends Controller implements HasMiddleware
 
         $this->productReviewService->deleteReview($review);
 
-        return response()->json(null, 204);
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }
