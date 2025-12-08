@@ -33,12 +33,12 @@ final class ProductReviewController extends Controller implements HasMiddleware
 
     public function store(StoreProductReviewRequest $request, Product $product): ProductReviewResource
     {
-        $data = $request->validated();
+        $validated = $request->validated();
 
         $dto = new ProductReviewCreateData(
-            auth()->id(),
-            $data['text'],
-            $data['rating'] ?? null,
+            userId: auth()->id(),
+            text: $validated['text'],
+            rating: $validated['rating'] ?? null,
         );
 
         $review = $this->productReviewService->createReview(
@@ -54,11 +54,11 @@ final class ProductReviewController extends Controller implements HasMiddleware
     {
         $this->authorize('update', $review);
 
-        $data = $request->validated();
+        $validated = $request->validated();
 
         $dto = new ProductReviewUpdateData(
-            $data['text'] ?? null,
-            $data['rating'] ?? null,
+            text: $validated['text'] ?? null,
+            rating: $validated['rating'] ?? null,
         );
 
         $review = $this->productReviewService->updateReview(

@@ -37,9 +37,9 @@ final class ProductReviewServiceTest extends TestCase
         $review = $service->createReview(
             $product,
             new ProductReviewCreateData(
-                $user->id,
-                'Nice',
-                5
+                userId: $user->id,
+                text: 'Nice',
+                rating: 5,
             )
         );
 
@@ -79,8 +79,8 @@ final class ProductReviewServiceTest extends TestCase
         $updated = $service->updateReview(
             $review,
             new ProductReviewUpdateData(
-                'Updated',
-                4
+                text: 'Updated',
+                rating: 4,
             )
         );
 

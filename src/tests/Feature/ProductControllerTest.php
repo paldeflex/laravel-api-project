@@ -63,18 +63,18 @@ final class ProductControllerTest extends TestCase
         $reviewService->createReview(
             $product,
             new ProductReviewCreateData(
-                $user->id,
-                'Good',
-                4
+                userId: $user->id,
+                text: 'Good',
+                rating: 4,
             )
         );
 
         $reviewService->createReview(
             $product,
             new ProductReviewCreateData(
-                $user->id,
-                'Great',
-                5
+                userId: $user->id,
+                text: 'Great',
+                rating: 5,
             )
         );
 
@@ -108,9 +108,9 @@ final class ProductControllerTest extends TestCase
         $review = $reviewService->createReview(
             $product,
             new ProductReviewCreateData(
-                $user->id,
-                'Nice',
-                5
+                userId: $user->id,
+                text: 'Nice',
+                rating: 5,
             )
         );
 

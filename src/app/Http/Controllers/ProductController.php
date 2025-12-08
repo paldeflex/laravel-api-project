@@ -47,11 +47,11 @@ final class ProductController extends Controller implements HasMiddleware
         $data = $request->validated();
 
         $dto = new ProductCreateData(
-            $data['name'],
-            $data['description'] ?? null,
-            $data['quantity'] ?? null,
-            $data['price'] ?? null,
-            isset($data['status'])
+            name: $data['name'],
+            description: $data['description'] ?? null,
+            quantity: $data['quantity'] ?? null,
+            price: $data['price'] ?? null,
+            status: isset($data['status'])
                 ? ProductStatus::from($data['status'])
                 : null,
         );

@@ -47,9 +47,9 @@ final class ProductServiceTest extends TestCase
         $reviewService->createReview(
             $published,
             new ProductReviewCreateData(
-                $user->id,
-                'Ok',
-                4
+                userId: $user->id,
+                text: 'Ok',
+                rating: 4,
             )
         );
 
@@ -75,11 +75,11 @@ final class ProductServiceTest extends TestCase
         $service = new ProductService();
 
         $dto = new ProductCreateData(
-            'New product',
-            'Desc',
-            3,
-            300,
-            ProductStatus::Published
+            name: 'New product',
+            description: 'Desc',
+            quantity: 3,
+            price: 300,
+            status: ProductStatus::Published
         );
 
         $images = [

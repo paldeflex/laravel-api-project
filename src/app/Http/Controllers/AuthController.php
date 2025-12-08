@@ -20,12 +20,12 @@ final class AuthController extends Controller
 
     public function register(RegisterRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $validated = $request->validated();
 
         $dto = new RegisterData(
-            $data['name'],
-            $data['email'],
-            $data['password'],
+            name: $validated['name'],
+            email: $validated['email'],
+            password: $validated['password'],
         );
 
         $token = $this->authService->register($dto);
@@ -36,13 +36,14 @@ final class AuthController extends Controller
         );
     }
 
+
     public function login(LoginRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $credentials = $request->validated();
 
         $dto = new LoginData(
-            $data['email'],
-            $data['password'],
+            email: $credentials['email'],
+            password: $credentials['password'],
         );
 
         $token = $this->authService->attemptLogin($dto);
