@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Models\ProductReview;
 use App\Models\User;
 
-class ProductReviewPolicy
+final class ProductReviewPolicy
 {
     public function update(User $user, ProductReview $review): bool
     {

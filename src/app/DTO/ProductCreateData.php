@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO;
 
 use App\Enums\ProductStatus;
 
-readonly class ProductCreateData
+final readonly class ProductCreateData
 {
     public function __construct(
         public string         $name,

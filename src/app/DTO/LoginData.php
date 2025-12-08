@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-readonly class LoginData
+final readonly class LoginData
 {
     public function __construct(
         public string $email,

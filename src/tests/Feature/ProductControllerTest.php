@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\DTO\ProductReviewCreateData;
@@ -10,7 +12,7 @@ use App\Services\ProductReviewService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ProductControllerTest extends TestCase
+final class ProductControllerTest extends TestCase
 {
     use RefreshDatabase;
 

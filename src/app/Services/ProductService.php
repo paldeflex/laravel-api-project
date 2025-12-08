@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\DTO\ProductCreateData;
@@ -8,7 +10,7 @@ use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\UploadedFile;
 
-class ProductService
+final class ProductService
 {
     public function getPublishedProducts(): LengthAwarePaginator
     {

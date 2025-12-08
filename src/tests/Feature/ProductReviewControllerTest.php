@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Enums\ProductStatus;
@@ -9,7 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ProductReviewControllerTest extends TestCase
+final class ProductReviewControllerTest extends TestCase
 {
     use RefreshDatabase;
 

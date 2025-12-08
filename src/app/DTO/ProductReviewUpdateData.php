@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO;
 
-readonly class ProductReviewUpdateData
+final readonly class ProductReviewUpdateData
 {
     public function __construct(
         public ?string $text = null,

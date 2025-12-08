@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use App\Models\Product;
@@ -10,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 /**
 * @mixin Product
  */
-class ProductDetailResource extends JsonResource
+final class ProductDetailResource extends JsonResource
 {
     public function toArray(Request $request): array
     {

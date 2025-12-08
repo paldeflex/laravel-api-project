@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use App\DTO\ProductCreateData;
@@ -14,7 +16,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class ProductServiceTest extends TestCase
+final class ProductServiceTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -99,7 +101,6 @@ class ProductServiceTest extends TestCase
             Storage::disk('public')->assertExists($image->path);
         }
     }
-
 
     public function test_update_product_updates_fields_and_appends_images(): void
     {

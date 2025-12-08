@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\ProductReview;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<ProductReview>
  */
-class ProductReviewFactory extends Factory
+final class ProductReviewFactory extends Factory
 {
     public function definition(): array
     {

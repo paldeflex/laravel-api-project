@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\DTO\ProductReviewCreateData;
@@ -14,7 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class ProductReviewController extends Controller implements HasMiddleware
+final class ProductReviewController extends Controller implements HasMiddleware
 {
     public function __construct(
         protected ProductReviewService $productReviewService,

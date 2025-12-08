@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use App\DTO\ProductReviewCreateData;
@@ -12,7 +14,7 @@ use App\Services\ProductReviewService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ProductReviewServiceTest extends TestCase
+final class ProductReviewServiceTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -91,7 +93,6 @@ class ProductReviewServiceTest extends TestCase
             'rating' => 4,
         ]);
     }
-
 
     public function test_delete_review_soft_deletes_record(): void
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\DTO\ProductReviewCreateData;
@@ -7,7 +9,7 @@ use App\DTO\ProductReviewUpdateData;
 use App\Models\Product;
 use App\Models\ProductReview;
 
-class ProductReviewService
+final class ProductReviewService
 {
     public function createReview(Product $product, ProductReviewCreateData $data): ProductReview
     {
