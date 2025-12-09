@@ -14,6 +14,7 @@ final class ProductReview extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'text',
         'rating',
     ];

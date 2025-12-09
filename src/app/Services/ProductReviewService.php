@@ -13,13 +13,13 @@ final class ProductReviewService
 {
     public function createReview(Product $product, ProductReviewCreateData $data): ProductReview
     {
-        $review = $product->productReviews()->make();
-        $review->user_id = $data->userId;
-        $review->text = $data->text;
-        $review->rating = $data->rating;
-        $review->save();
-
-        return $review;
+        return $product
+            ->productReviews()
+            ->create([
+                'user_id' => $data->userId,
+                'text'    => $data->text,
+                'rating'  => $data->rating,
+            ]);
     }
 
     public function updateReview(ProductReview $review, ProductReviewUpdateData $data): ProductReview
