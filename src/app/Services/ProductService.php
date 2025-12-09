@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\DTO\ProductCreateData;
+use App\DTO\ProductUpdateData;
 use App\Enums\ProductStatus;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -41,9 +42,10 @@ final class ProductService
         return $product;
     }
 
-    public function updateProduct(Product $product, array $data, ?array $images = null): Product
+
+    public function updateProduct(Product $product, ProductUpdateData $data, ?array $images = null): Product
     {
-        $product->update($data);
+        $product->update($data->toArray());
 
         if ($images) {
             $this->handleImages($product, $images);

@@ -6,6 +6,7 @@ namespace Tests\Unit;
 
 use App\DTO\ProductCreateData;
 use App\DTO\ProductReviewCreateData;
+use App\DTO\ProductUpdateData;
 use App\Enums\ProductStatus;
 use App\Models\Product;
 use App\Models\User;
@@ -123,10 +124,12 @@ final class ProductServiceTest extends TestCase
             UploadedFile::fake()->create('image1.jpg', 100, 'image/jpeg'),
         ];
 
-        $updated = $service->updateProduct($product, [
-            'name' => 'Updated product',
+        $dto = ProductUpdateData::fromArray([
+            'name'  => 'Updated product',
             'price' => 200,
-        ], $images);
+        ]);
+
+        $updated = $service->updateProduct($product, $dto, $images);
 
         $this->assertEquals('Updated product', $updated->name);
         $this->assertEquals(200, $updated->price);

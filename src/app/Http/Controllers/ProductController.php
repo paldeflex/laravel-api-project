@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\DTO\ProductCreateData;
+use App\DTO\ProductUpdateData;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductDetailResource;
@@ -60,13 +61,15 @@ final class ProductController extends Controller
     {
         $images = $request->hasFile('images') ? $request->file('images') : null;
 
-        $product = $this->productService->updateProduct(
+        $dto = ProductUpdateData::fromArray($request->validated());
+
+        $updatedProduct = $this->productService->updateProduct(
             $product,
-            $request->validated(),
+            $dto,
             $images
         );
 
-        return new ProductDetailResource($product);
+        return new ProductDetailResource($updatedProduct);
     }
 
     public function destroy(Product $product): JsonResponse
