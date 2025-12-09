@@ -24,9 +24,9 @@ final class AuthControllerTest extends TestCase
 
         $response->assertCreated();
         $response->assertJsonStructure([
-            'access_token',
-            'token_type',
-            'expires_in',
+            'accessToken',
+            'tokenType',
+            'expiresIn',
         ]);
 
         $this->assertDatabaseHas('users', [
@@ -47,9 +47,9 @@ final class AuthControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonStructure([
-            'access_token',
-            'token_type',
-            'expires_in',
+            'accessToken',
+            'tokenType',
+            'expiresIn',
         ]);
     }
 

@@ -6,6 +6,8 @@ namespace App\Services;
 
 use App\DTO\LoginData;
 use App\DTO\RegisterData;
+use App\DTO\TokenPayload;
+use App\Enums\TokenType;
 use App\Exceptions\InvalidCredentialsException;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -39,13 +41,13 @@ final class AuthService
         return $token;
     }
 
-    public function getTokenPayload(string $token): array
+    public function getTokenPayload(string $token): TokenPayload
     {
-        return [
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => Auth::factory()->getTTL() * 60,
-        ];
+        return new TokenPayload(
+            accessToken: $token,
+            tokenType: TokenType::Bearer->value,
+            expiresIn: Auth::factory()->getTTL() * 60,
+        );
     }
 
     public function currentUser(): ?User
