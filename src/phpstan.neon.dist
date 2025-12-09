@@ -16,3 +16,4 @@ parameters:
         - vendor/*
         - storage/*
         - bootstrap/cache/*
+        - database/migrations/*

@@ -13,13 +13,16 @@ final class ProductReviewService
 {
     public function createReview(Product $product, ProductReviewCreateData $data): ProductReview
     {
-        return $product
+        /** @var ProductReview $review */
+        $review = $product
             ->productReviews()
             ->create([
                 'user_id' => $data->userId,
                 'text' => $data->text,
                 'rating' => $data->rating,
             ]);
+
+        return $review;
     }
 
     public function updateReview(ProductReview $review, ProductReviewUpdateData $data): ProductReview
