@@ -18,11 +18,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ProductController extends Controller
 {
-
     public function __construct(
         private readonly ProductService $productService,
-    ) {
-    }
+    ) {}
 
     public function index(): AnonymousResourceCollection
     {
@@ -30,8 +28,6 @@ final class ProductController extends Controller
 
         return ProductListResource::collection($products);
     }
-
-
 
     public function store(StoreProductRequest $request): ProductDetailResource
     {

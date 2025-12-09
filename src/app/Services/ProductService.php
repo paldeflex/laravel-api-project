@@ -42,7 +42,6 @@ final class ProductService
         return $product;
     }
 
-
     public function updateProduct(Product $product, ProductUpdateData $data, ?array $images = null): Product
     {
         $product->update($data->toArray());

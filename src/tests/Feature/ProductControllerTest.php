@@ -59,7 +59,7 @@ final class ProductControllerTest extends TestCase
             'status' => ProductStatus::Published,
         ]);
 
-        $reviewService = new ProductReviewService();
+        $reviewService = new ProductReviewService;
 
         $reviewService->createReview(
             $product,
@@ -104,7 +104,7 @@ final class ProductControllerTest extends TestCase
             'path' => 'products/'.$product->id.'/image.jpg',
         ]);
 
-        $reviewService = new ProductReviewService();
+        $reviewService = new ProductReviewService;
 
         $review = $reviewService->createReview(
             $product,

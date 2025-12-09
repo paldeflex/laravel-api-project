@@ -10,7 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
 /**
-* @mixin Product
+ * @mixin Product
  */
 final class ProductDetailResource extends JsonResource
 {

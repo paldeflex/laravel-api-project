@@ -10,8 +10,7 @@ final readonly class RegisterData
         public string $name,
         public string $email,
         public string $password,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

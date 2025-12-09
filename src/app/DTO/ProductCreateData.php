@@ -9,13 +9,12 @@ use App\Enums\ProductStatus;
 final readonly class ProductCreateData
 {
     public function __construct(
-        public string         $name,
-        public ?string        $description,
-        public ?int           $quantity,
-        public ?int           $price,
+        public string $name,
+        public ?string $description,
+        public ?int $quantity,
+        public ?int $price,
         public ?ProductStatus $status,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

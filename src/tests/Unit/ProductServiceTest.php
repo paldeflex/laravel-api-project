@@ -43,7 +43,7 @@ final class ProductServiceTest extends TestCase
             'status' => ProductStatus::Draft,
         ]);
 
-        $reviewService = new ProductReviewService();
+        $reviewService = new ProductReviewService;
 
         $reviewService->createReview(
             $published,
@@ -54,7 +54,7 @@ final class ProductServiceTest extends TestCase
             )
         );
 
-        $service = new ProductService();
+        $service = new ProductService;
 
         $paginator = $service->getPublishedProducts();
 
@@ -73,7 +73,7 @@ final class ProductServiceTest extends TestCase
 
         $user = User::factory()->create();
 
-        $service = new ProductService();
+        $service = new ProductService;
 
         $dto = new ProductCreateData(
             name: 'New product',
@@ -118,14 +118,14 @@ final class ProductServiceTest extends TestCase
             'status' => ProductStatus::Draft,
         ]);
 
-        $service = new ProductService();
+        $service = new ProductService;
 
         $images = [
             UploadedFile::fake()->create('image1.jpg', 100, 'image/jpeg'),
         ];
 
         $dto = ProductUpdateData::fromArray([
-            'name'  => 'Updated product',
+            'name' => 'Updated product',
             'price' => 200,
         ]);
 
@@ -153,7 +153,7 @@ final class ProductServiceTest extends TestCase
             'status' => ProductStatus::Draft,
         ]);
 
-        $service = new ProductService();
+        $service = new ProductService;
 
         $service->deleteProduct($product);
 

@@ -26,7 +26,6 @@ final class AuthService
         return Auth::login($user);
     }
 
-
     public function login(LoginData $credentials): string
     {
         $token = Auth::attempt([
@@ -35,7 +34,7 @@ final class AuthService
         ]);
 
         if (! is_string($token)) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException;
         }
 
         return $token;

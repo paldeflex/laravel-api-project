@@ -14,8 +14,7 @@ final readonly class ProductUpdateData
         public ?int $quantity = null,
         public ?int $price = null,
         public ?ProductStatus $status = null,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {
@@ -34,11 +33,11 @@ final readonly class ProductUpdateData
     {
         return array_filter(
             [
-                'name'        => $this->name,
+                'name' => $this->name,
                 'description' => $this->description,
-                'quantity'    => $this->quantity,
-                'price'       => $this->price,
-                'status'      => $this->status?->value,
+                'quantity' => $this->quantity,
+                'price' => $this->price,
+                'status' => $this->status?->value,
             ],
             static fn (mixed $value): bool => $value !== null,
         );

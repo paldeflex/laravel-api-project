@@ -13,16 +13,13 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use App\Services\ProductReviewService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Symfony\Component\HttpFoundation\Response;
 
 final class ProductReviewController extends Controller
 {
     public function __construct(
         private readonly ProductReviewService $productReviewService,
-    ) {
-    }
+    ) {}
 
     public function store(StoreProductReviewRequest $request, Product $product): ProductReviewResource
     {

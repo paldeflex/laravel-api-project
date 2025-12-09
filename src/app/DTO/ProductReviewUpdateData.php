@@ -8,9 +8,8 @@ final readonly class ProductReviewUpdateData
 {
     public function __construct(
         public ?string $text = null,
-        public ?int    $rating = null,
-    ) {
-    }
+        public ?int $rating = null,
+    ) {}
 
     public static function fromArray(array $data): self
     {
@@ -24,7 +23,7 @@ final readonly class ProductReviewUpdateData
     {
         return array_filter(
             [
-                'text'   => $this->text,
+                'text' => $this->text,
                 'rating' => $this->rating,
             ],
             static fn (mixed $value): bool => $value !== null,

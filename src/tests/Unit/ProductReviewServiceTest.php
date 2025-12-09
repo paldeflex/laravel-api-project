@@ -32,7 +32,7 @@ final class ProductReviewServiceTest extends TestCase
             'status' => ProductStatus::Published,
         ]);
 
-        $service = new ProductReviewService();
+        $service = new ProductReviewService;
 
         $review = $service->createReview(
             $product,
@@ -74,7 +74,7 @@ final class ProductReviewServiceTest extends TestCase
         $review->user()->associate($user);
         $product->productReviews()->save($review);
 
-        $service = new ProductReviewService();
+        $service = new ProductReviewService;
 
         $updated = $service->updateReview(
             $review,
@@ -116,7 +116,7 @@ final class ProductReviewServiceTest extends TestCase
         $review->user()->associate($user);
         $product->productReviews()->save($review);
 
-        $service = new ProductReviewService();
+        $service = new ProductReviewService;
 
         $service->deleteReview($review);
 

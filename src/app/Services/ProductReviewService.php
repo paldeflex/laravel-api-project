@@ -17,8 +17,8 @@ final class ProductReviewService
             ->productReviews()
             ->create([
                 'user_id' => $data->userId,
-                'text'    => $data->text,
-                'rating'  => $data->rating,
+                'text' => $data->text,
+                'rating' => $data->rating,
             ]);
     }
 
