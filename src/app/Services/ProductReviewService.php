@@ -24,17 +24,7 @@ final class ProductReviewService
 
     public function updateReview(ProductReview $review, ProductReviewUpdateData $data): ProductReview
     {
-        $payload = [];
-
-        if (! is_null($data->text)) {
-            $payload['text'] = $data->text;
-        }
-
-        if (! is_null($data->rating)) {
-            $payload['rating'] = $data->rating;
-        }
-
-        $review->update($payload);
+        $review->update($data->toArray());
 
         return $review;
     }

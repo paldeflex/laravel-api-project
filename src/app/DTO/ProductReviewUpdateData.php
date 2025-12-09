@@ -19,4 +19,15 @@ final readonly class ProductReviewUpdateData
             rating: $data['rating'] ?? null,
         );
     }
+
+    public function toArray(): array
+    {
+        return array_filter(
+            [
+                'text'   => $this->text,
+                'rating' => $this->rating,
+            ],
+            static fn (mixed $value): bool => $value !== null,
+        );
+    }
 }
