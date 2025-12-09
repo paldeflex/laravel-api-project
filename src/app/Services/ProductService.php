@@ -69,16 +69,23 @@ final class ProductService
 
     private function handleImages(Product $product, array $images): void
     {
+        $imagesDirectory = $this->getProductImagesDirectory($product);
+
         foreach ($images as $image) {
             if (! $image instanceof UploadedFile) {
                 continue;
             }
 
-            $path = $image->store('products/'.$product->id, 'public');
+            $imagePath = $image->store($imagesDirectory, 'public');
 
             $product->productImages()->create([
-                'path' => $path,
+                'path' => $imagePath,
             ]);
         }
+    }
+
+    private function getProductImagesDirectory(Product $product): string
+    {
+        return 'products/'.$product->id;
     }
 }
