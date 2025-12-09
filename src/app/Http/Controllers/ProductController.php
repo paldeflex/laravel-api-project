@@ -38,9 +38,9 @@ final class ProductController extends Controller
         $user = $request->user();
 
         $product = $this->productService->createProduct(
-            $dto,
-            $user->id,
-            $images
+            data: $dto,
+            userId: $user->id,
+            images: $images,
         );
 
         return new ProductDetailResource($product);
@@ -60,9 +60,9 @@ final class ProductController extends Controller
         $dto = ProductUpdateData::fromArray($request->validated());
 
         $updatedProduct = $this->productService->updateProduct(
-            $product,
-            $dto,
-            $images
+            product: $product,
+            data: $dto,
+            images: $images,
         );
 
         return new ProductDetailResource($updatedProduct);

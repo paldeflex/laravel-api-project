@@ -26,13 +26,13 @@ final class ProductReviewController extends Controller
         $user = $request->user();
 
         $dto = ProductReviewCreateData::fromArray(
-            $request->validated(),
-            $user->id,
+            data: $request->validated(),
+            userId: $user->id,
         );
 
         $review = $this->productReviewService->createReview(
-            $product,
-            $dto
+            product: $product,
+            data: $dto,
         );
 
         return new ProductReviewResource($review);
@@ -45,8 +45,8 @@ final class ProductReviewController extends Controller
         $dto = ProductReviewUpdateData::fromArray($request->validated());
 
         $review = $this->productReviewService->updateReview(
-            $review,
-            $dto
+            review: $review,
+            data: $dto,
         );
 
         return new ProductReviewResource($review);
