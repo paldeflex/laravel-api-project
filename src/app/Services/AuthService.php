@@ -50,7 +50,7 @@ final class AuthService
         );
     }
 
-    public function currentUser(): ?User
+    public function currentUser(): Authenticatable
     {
         return Auth::user();
     }
