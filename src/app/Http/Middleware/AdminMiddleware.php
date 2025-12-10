@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class AdminMiddleware
 {
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
 

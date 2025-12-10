@@ -12,13 +12,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class EnsureProductIsPublished
 {
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         $product = $request->route('product');
 
         abort_if(
             $product instanceof Product && $product->status === ProductStatus::Draft,
-            Response::HTTP_NOT_FOUND
+            Response::HTTP_NOT_FOUND,
         );
 
         return $next($request);
