@@ -12,6 +12,7 @@ use App\Exceptions\InvalidCredentialsException;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 final class AuthService
 {
@@ -45,7 +46,7 @@ final class AuthService
         return new TokenPayload(
             accessToken: $token,
             tokenType: TokenType::Bearer->value,
-            expiresIn: Auth::factory()->getTTL() * 60,
+            expiresIn: config('jwt.ttl') * 60,
         );
     }
 
