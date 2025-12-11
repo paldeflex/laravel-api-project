@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
 use App\Services\ProductReviewService;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,6 +19,9 @@ final class ProductReviewServiceTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * @throws BindingResolutionException
+     */
     public function test_create_review_sets_user_and_product_and_data(): void
     {
         $user = User::factory()->create();
@@ -52,6 +56,9 @@ final class ProductReviewServiceTest extends TestCase
         ]);
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
     public function test_update_review_updates_fields(): void
     {
         $user = User::factory()->create();
@@ -94,6 +101,9 @@ final class ProductReviewServiceTest extends TestCase
         ]);
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
     public function test_delete_review_soft_deletes_record(): void
     {
         $user = User::factory()->create();
