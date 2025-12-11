@@ -30,7 +30,6 @@ final readonly class ProductService
         return $this->prepareProductForShow($product, $images);
     }
 
-
     public function updateProduct(Product $product, ProductUpdateData $data, ?array $images = null): Product
     {
         $product = $this->productRepository->update($product, $data);
