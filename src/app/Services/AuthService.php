@@ -10,6 +10,7 @@ use App\DTO\TokenPayload;
 use App\Enums\TokenType;
 use App\Exceptions\InvalidCredentialsException;
 use App\Repositories\UserRepositoryInterface;
+use http\Exception\RuntimeException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 
@@ -62,7 +63,13 @@ final readonly class AuthService
 
     public function currentUser(): Authenticatable
     {
-        return Auth::user();
+        $user = Auth::user();
+
+        if (! $user instanceof Authenticatable) {
+            throw new RuntimeException('Unauthenticated user.');
+        }
+
+        return $user;
     }
 
     public function logout(): void

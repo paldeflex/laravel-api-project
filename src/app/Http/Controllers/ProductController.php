@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductDetailResource;
 use App\Http\Resources\ProductListResource;
 use App\Models\Product;
+use App\Models\User;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -38,6 +39,7 @@ final class ProductController extends Controller
 
         $dto = ProductCreateData::fromArray($data);
 
+        /** @var User $user */
         $user = $request->user();
 
         $product = $this->productService->createProduct(

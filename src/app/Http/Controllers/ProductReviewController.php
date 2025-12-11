@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateProductReviewRequest;
 use App\Http\Resources\ProductReviewResource;
 use App\Models\Product;
 use App\Models\ProductReview;
+use App\Models\User;
 use App\Services\ProductReviewService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,7 @@ final class ProductReviewController extends Controller
 
     public function store(StoreProductReviewRequest $request, Product $product): ProductReviewResource
     {
+        /** @var User $user */
         $user = $request->user();
 
         /** @var array{text: string, rating?: int|string|null} $data */
