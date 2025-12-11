@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
-final class TokenPayload
+final readonly class TokenPayload
 {
     public function __construct(
-        public readonly string $accessToken,
-        public readonly string $tokenType,
-        public readonly int $expiresIn,
+        public string $accessToken,
+        public string $tokenType,
+        public int    $expiresIn,
     ) {}
 }

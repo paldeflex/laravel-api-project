@@ -5,160 +5,151 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\DTO\ProductCreateData;
-use App\DTO\ProductReviewCreateData;
 use App\DTO\ProductUpdateData;
 use App\Enums\ProductStatus;
 use App\Models\Product;
-use App\Models\User;
-use App\Services\ProductReviewService;
+use App\Repositories\ProductRepositoryInterface;
+use App\Services\ProductImageStorageInterface;
 use App\Services\ProductService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
+use Mockery;
 use Tests\TestCase;
 
 final class ProductServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
-    public function test_get_published_products_returns_only_published_with_relations(): void
+    private ProductRepositoryInterface $productRepository;
+
+    private ProductImageStorageInterface $imageStorage;
+
+    private ProductService $service;
+
+    protected function setUp(): void
     {
-        $user = User::factory()->create();
+        parent::setUp();
 
-        $published = Product::create([
-            'user_id' => $user->id,
-            'name' => 'Published',
-            'description' => 'Desc',
-            'quantity' => 10,
-            'price' => 1000,
-            'status' => ProductStatus::Published,
-        ]);
+        $this->productRepository = Mockery::mock(ProductRepositoryInterface::class);
+        $this->imageStorage = Mockery::mock(ProductImageStorageInterface::class);
 
-        Product::create([
-            'user_id' => $user->id,
-            'name' => 'Draft',
-            'description' => 'Desc',
-            'quantity' => 5,
-            'price' => 500,
-            'status' => ProductStatus::Draft,
-        ]);
-
-        $reviewService = new ProductReviewService;
-
-        $reviewService->createReview(
-            $published,
-            new ProductReviewCreateData(
-                userId: $user->id,
-                text: 'Ok',
-                rating: 4,
-            )
+        $this->service = new ProductService(
+            $this->productRepository,
+            $this->imageStorage,
         );
-
-        $service = new ProductService;
-
-        $paginator = $service->getPublishedProducts();
-
-        $this->assertCount(1, $paginator->items());
-
-        $product = $paginator->items()[0];
-
-        $this->assertEquals('Published', $product->name);
-        $this->assertTrue($product->relationLoaded('productImages'));
-        $this->assertNotNull($product->product_reviews_avg_rating);
     }
 
-    public function test_create_product_sets_user_and_saves_images(): void
+    protected function tearDown(): void
     {
-        Storage::fake('public');
+        Mockery::close();
 
-        $user = User::factory()->create();
-
-        $service = new ProductService;
-
-        $dto = new ProductCreateData(
-            name: 'New product',
-            description: 'Desc',
-            quantity: 3,
-            price: 300,
-            status: ProductStatus::Published
-        );
-
-        $images = [
-            UploadedFile::fake()->create('image1.jpg', 100, 'image/jpeg'),
-            UploadedFile::fake()->create('image2.jpg', 100, 'image/jpeg'),
-        ];
-
-        $product = $service->createProduct($dto, $user->id, $images);
-
-        $this->assertDatabaseHas('products', [
-            'id' => $product->id,
-            'user_id' => $user->id,
-            'name' => 'New product',
-        ]);
-
-        $this->assertCount(2, $product->productImages);
-
-        foreach ($product->productImages as $image) {
-            Storage::disk('public')->assertExists($image->path);
-        }
+        parent::tearDown();
     }
 
-    public function test_update_product_updates_fields_and_appends_images(): void
+    public function test_create_product_calls_repository_and_image_storage(): void
     {
-        Storage::fake('public');
+        $data = new ProductCreateData(
+            name: 'Test product',
+            description: 'Description',
+            quantity: 10,
+            price: 100_00,
+            status: ProductStatus::Published,
+        );
 
-        $user = User::factory()->create();
+        $userId = 42;
 
-        $product = Product::create([
-            'user_id' => $user->id,
-            'name' => 'Old product',
-            'description' => 'Old desc',
-            'quantity' => 1,
-            'price' => 100,
-            'status' => ProductStatus::Draft,
-        ]);
+        $product = new Product;
+        $product->id = 123;
+        $product->name = $data->name;
 
-        $service = new ProductService;
+        $imageFile = UploadedFile::fake()->create('image.jpg', 100, 'image/jpeg');
 
-        $images = [
-            UploadedFile::fake()->create('image1.jpg', 100, 'image/jpeg'),
-        ];
+        $this->productRepository
+            ->shouldReceive('create')
+            ->once()
+            ->with($data, $userId)
+            ->andReturn($product);
 
-        $dto = ProductUpdateData::fromArray([
-            'name' => 'Updated product',
+        $this->productRepository
+            ->shouldReceive('findForShow')
+            ->once()
+            ->with($product)
+            ->andReturn($product);
+
+        $this->imageStorage
+            ->shouldReceive('store')
+            ->once()
+            ->with($product, $imageFile);
+
+        $result = $this->service->createProduct($data, $userId, [$imageFile]);
+
+        $this->assertSame($product, $result);
+    }
+
+    public function test_update_product_calls_repository_and_image_storage(): void
+    {
+        $product = new Product();
+        $product->id = 123;
+        $product->name = 'Old name';
+
+        $data = ProductUpdateData::fromArray([
+            'name' => 'Updated name',
             'price' => 200,
         ]);
 
-        $updated = $service->updateProduct($product, $dto, $images);
+        $image = UploadedFile::fake()->create('image.jpg');
 
-        $this->assertEquals('Updated product', $updated->name);
-        $this->assertEquals(200, $updated->price);
-        $this->assertCount(1, $updated->productImages);
+        $this->productRepository
+            ->shouldReceive('update')
+            ->once()
+            ->with($product, $data)
+            ->andReturn($product);
 
-        foreach ($updated->productImages as $image) {
-            Storage::disk('public')->assertExists($image->path);
-        }
+        $this->imageStorage
+            ->shouldReceive('store')
+            ->once()
+            ->with($product, $image);
+
+        $this->productRepository
+            ->shouldReceive('findForShow')
+            ->once()
+            ->with($product)
+            ->andReturn($product);
+
+        $result = $this->service->updateProduct($product, $data, [$image]);
+
+        $this->assertSame($product, $result);
     }
 
-    public function test_delete_product_soft_deletes_record(): void
+    public function test_get_product_for_show_calls_repository(): void
     {
-        $user = User::factory()->create();
+        $product = new Product();
+        $product->id = 55;
 
-        $product = Product::create([
-            'user_id' => $user->id,
-            'name' => 'To delete',
-            'description' => 'Desc',
-            'quantity' => 1,
-            'price' => 100,
-            'status' => ProductStatus::Draft,
-        ]);
+        $this->productRepository
+            ->shouldReceive('findForShow')
+            ->once()
+            ->with($product)
+            ->andReturn($product);
 
-        $service = new ProductService;
+        $result = $this->service->getProductForShow($product);
 
-        $service->deleteProduct($product);
-
-        $this->assertSoftDeleted('products', [
-            'id' => $product->id,
-        ]);
+        $this->assertSame($product, $result);
     }
+
+    public function test_delete_product_calls_repository_delete(): void
+    {
+        $product = new Product();
+        $product->id = 777;
+
+        $this->productRepository
+            ->shouldReceive('delete')
+            ->once()
+            ->with($product);
+
+        $this->service->deleteProduct($product);
+
+        $this->assertTrue(true);
+    }
+
 }

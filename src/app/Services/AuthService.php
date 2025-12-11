@@ -10,9 +10,9 @@ use App\DTO\TokenPayload;
 use App\Enums\TokenType;
 use App\Exceptions\InvalidCredentialsException;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Contracts\Auth\Authenticatable;
 
 final class AuthService
 {
