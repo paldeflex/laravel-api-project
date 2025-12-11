@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ProductStatus;
+use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -51,6 +52,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 final class Product extends Model
 {
+    /** @use HasFactory<ProductFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -66,16 +68,25 @@ final class Product extends Model
         'status' => ProductStatus::class,
     ];
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany<ProductReview, $this>
+     */
     public function productReviews(): HasMany
     {
         return $this->hasMany(ProductReview::class);
     }
 
+    /**
+     * @return HasMany<ProductImage, $this>
+     */
     public function productImages(): HasMany
     {
         return $this->hasMany(ProductImage::class);

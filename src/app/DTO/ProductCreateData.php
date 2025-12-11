@@ -16,6 +16,9 @@ final readonly class ProductCreateData
         public ?ProductStatus $status,
     ) {}
 
+    /**
+     * @param  array{name: string, description?: string|null, quantity?: int|string|null, price?: int|string|null, status?: int|string|null}  $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(

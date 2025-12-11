@@ -13,6 +13,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class UserResource extends JsonResource
 {
+    /**
+     * @return array<string, int|string>
+     */
     public function toArray(Request $request): array
     {
         return [

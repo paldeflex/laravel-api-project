@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\ProductReviewFactory;
+use Eloquent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,10 +39,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductReview withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductReview withoutTrashed()
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
+/** @use HasFactory<ProductReviewFactory> */
 final class ProductReview extends Model
 {
+    /** @use HasFactory<ProductReviewFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -53,11 +57,17 @@ final class ProductReview extends Model
         'rating' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

@@ -18,11 +18,17 @@ final readonly class ProductService
         private ProductImageStorageInterface $productImageStorage,
     ) {}
 
+    /**
+     * @return LengthAwarePaginator<int, Product>
+     */
     public function getPublishedProducts(): LengthAwarePaginator
     {
         return $this->productRepository->getPublishedProducts();
     }
 
+    /**
+     * @param  array<int, UploadedFile>|null  $images
+     */
     public function createProduct(ProductCreateData $data, int $userId, ?array $images = null): Product
     {
         $product = $this->productRepository->create($data, $userId);
@@ -30,6 +36,9 @@ final readonly class ProductService
         return $this->prepareProductForShow($product, $images);
     }
 
+    /**
+     * @param  array<int, UploadedFile>|null  $images
+     */
     public function updateProduct(Product $product, ProductUpdateData $data, ?array $images = null): Product
     {
         $product = $this->productRepository->update($product, $data);
@@ -47,6 +56,9 @@ final readonly class ProductService
         $this->productRepository->delete($product);
     }
 
+    /**
+     * @param  array<int, UploadedFile>|null  $images
+     */
     private function prepareProductForShow(Product $product, ?array $images = null): Product
     {
         if ($images) {
@@ -56,13 +68,12 @@ final readonly class ProductService
         return $this->productRepository->findForShow($product);
     }
 
+    /**
+     * @param  array<int, UploadedFile>  $images
+     */
     private function handleImages(Product $product, array $images): void
     {
         foreach ($images as $image) {
-            if (! $image instanceof UploadedFile) {
-                continue;
-            }
-
             $this->productImageStorage->store($product, $image);
         }
     }

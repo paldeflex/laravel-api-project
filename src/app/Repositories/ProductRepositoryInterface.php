@@ -11,6 +11,9 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface ProductRepositoryInterface
 {
+    /**
+     * @return LengthAwarePaginator<int, Product>
+     */
     public function getPublishedProducts(): LengthAwarePaginator;
 
     public function create(ProductCreateData $data, int $userId): Product;

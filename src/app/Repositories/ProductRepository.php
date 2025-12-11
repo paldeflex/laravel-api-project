@@ -12,6 +12,9 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 final class ProductRepository implements ProductRepositoryInterface
 {
+    /**
+     * @return LengthAwarePaginator<int, Product>
+     */
     public function getPublishedProducts(): LengthAwarePaginator
     {
         return Product::query()

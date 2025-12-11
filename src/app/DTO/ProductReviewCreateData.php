@@ -12,6 +12,9 @@ final readonly class ProductReviewCreateData
         public ?int $rating,
     ) {}
 
+    /**
+     * @param  array{text: string, rating?: int|string|null}  $data
+     */
     public static function fromArray(array $data, int $userId): self
     {
         return new self(

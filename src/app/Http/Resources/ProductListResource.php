@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources;
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -14,6 +15,9 @@ use Illuminate\Support\Facades\Storage;
  */
 final class ProductListResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [
@@ -29,7 +33,9 @@ final class ProductListResource extends JsonResource
             'images' => $this->whenLoaded(
                 'productImages',
                 fn () => $this->productImages
-                    ->map(fn ($image) => Storage::disk('public')->url($image->path))
+                    ->map(
+                        fn (ProductImage $image): string => Storage::disk('public')->url($image->path)
+                    )
             ),
         ];
     }

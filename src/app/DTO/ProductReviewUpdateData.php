@@ -11,6 +11,9 @@ final readonly class ProductReviewUpdateData
         public ?int $rating = null,
     ) {}
 
+    /**
+     * @param  array{text?: string|null, rating?: int|string|null}  $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -19,6 +22,9 @@ final readonly class ProductReviewUpdateData
         );
     }
 
+    /**
+     * @return array<string, int|string>
+     */
     public function toArray(): array
     {
         return array_filter(

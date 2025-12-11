@@ -11,6 +11,9 @@ final readonly class LoginData
         public string $password,
     ) {}
 
+    /**
+     * @param  array{email: string, password: string}  $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(

@@ -12,6 +12,9 @@ final readonly class RegisterData
         public string $password,
     ) {}
 
+    /**
+     * @param  array{name: string, email: string, password: string}  $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(
