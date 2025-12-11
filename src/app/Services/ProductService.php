@@ -27,22 +27,15 @@ final readonly class ProductService
     {
         $product = $this->productRepository->create($data, $userId);
 
-        if ($images) {
-            $this->handleImages($product, $images);
-        }
-
-        return $this->productRepository->findForShow($product);
+        return $this->prepareProductForShow($product, $images);
     }
+
 
     public function updateProduct(Product $product, ProductUpdateData $data, ?array $images = null): Product
     {
         $product = $this->productRepository->update($product, $data);
 
-        if ($images) {
-            $this->handleImages($product, $images);
-        }
-
-        return $this->productRepository->findForShow($product);
+        return $this->prepareProductForShow($product, $images);
     }
 
     public function getProductForShow(Product $product): Product
@@ -53,6 +46,15 @@ final readonly class ProductService
     public function deleteProduct(Product $product): void
     {
         $this->productRepository->delete($product);
+    }
+
+    private function prepareProductForShow(Product $product, ?array $images = null): Product
+    {
+        if ($images) {
+            $this->handleImages($product, $images);
+        }
+
+        return $this->productRepository->findForShow($product);
     }
 
     private function handleImages(Product $product, array $images): void
