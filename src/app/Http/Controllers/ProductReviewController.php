@@ -25,8 +25,11 @@ final class ProductReviewController extends Controller
     {
         $user = $request->user();
 
+        /** @var array{text: string, rating?: int|string|null} $data */
+        $data = $request->validated();
+
         $dto = ProductReviewCreateData::fromArray(
-            data: $request->validated(),
+            data: $data,
             userId: $user->id,
         );
 
@@ -42,7 +45,10 @@ final class ProductReviewController extends Controller
     {
         $this->authorize('update', $review);
 
-        $dto = ProductReviewUpdateData::fromArray($request->validated());
+        /** @var array{text?: string|null, rating?: int|string|null} $data */
+        $data = $request->validated();
+
+        $dto = ProductReviewUpdateData::fromArray($data);
 
         $review = $this->productReviewService->updateReview(
             review: $review,

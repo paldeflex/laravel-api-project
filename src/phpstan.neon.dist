@@ -5,11 +5,10 @@ parameters:
     paths:
         - app
         - bootstrap
-        - config
         - database
         - routes
 
-    level: 6
+    level: 7
 
     excludePaths:
         - vendor/*

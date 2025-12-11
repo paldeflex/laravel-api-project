@@ -20,7 +20,9 @@ final readonly class ProductReviewCreateData
         return new self(
             userId: $userId,
             text: $data['text'],
-            rating: $data['rating'] ?? null,
+            rating: array_key_exists('rating', $data) && $data['rating'] !== null
+                ? (int) $data['rating']
+                : null,
         );
     }
 }

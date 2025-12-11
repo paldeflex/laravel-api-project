@@ -24,8 +24,12 @@ final readonly class ProductCreateData
         return new self(
             name: $data['name'],
             description: $data['description'] ?? null,
-            quantity: $data['quantity'] ?? null,
-            price: $data['price'] ?? null,
+            quantity: array_key_exists('quantity', $data) && $data['quantity'] !== null
+                ? (int) $data['quantity']
+                : null,
+            price: array_key_exists('price', $data) && $data['price'] !== null
+                ? (int) $data['price']
+                : null,
             status: isset($data['status'])
                 ? ProductStatus::from($data['status'])
                 : null,

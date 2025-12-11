@@ -33,7 +33,10 @@ final class ProductController extends Controller
     {
         $images = $request->hasFile('images') ? $request->file('images') : null;
 
-        $dto = ProductCreateData::fromArray($request->validated());
+        /** @var array{name: string, description?: string|null, quantity?: int|string|null, price?: int|string|null, status?: int|string|null} $data */
+        $data = $request->validated();
+
+        $dto = ProductCreateData::fromArray($data);
 
         $user = $request->user();
 
@@ -57,7 +60,10 @@ final class ProductController extends Controller
     {
         $images = $request->hasFile('images') ? $request->file('images') : null;
 
-        $dto = ProductUpdateData::fromArray($request->validated());
+        /** @var array{name?: string, description?: string|null, quantity?: int|string|null, price?: int|string|null, status?: int|string|null} $data */
+        $data = $request->validated();
+
+        $dto = ProductUpdateData::fromArray($data);
 
         $updatedProduct = $this->productService->updateProduct(
             product: $product,

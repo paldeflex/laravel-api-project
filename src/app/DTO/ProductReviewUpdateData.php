@@ -18,7 +18,9 @@ final readonly class ProductReviewUpdateData
     {
         return new self(
             text: $data['text'] ?? null,
-            rating: $data['rating'] ?? null,
+            rating: array_key_exists('rating', $data) && $data['rating'] !== null
+                ? (int) $data['rating']
+                : null,
         );
     }
 
