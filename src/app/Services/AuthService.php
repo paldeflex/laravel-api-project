@@ -21,19 +21,30 @@ final readonly class AuthService
 
     public function register(RegisterData $data): string
     {
-        $user = $this->userRepository->create($data);
+        $this->userRepository->create($data);
 
-        return Auth::login($user);
+        /** @var string|false $token */
+        $token = Auth::attempt([
+            'email' => $data->email,
+            'password' => $data->password,
+        ]);
+
+        if ($token === false) {
+            throw new InvalidCredentialsException;
+        }
+
+        return $token;
     }
 
     public function login(LoginData $credentials): string
     {
+        /** @var string|false $token */
         $token = Auth::attempt([
             'email' => $credentials->email,
             'password' => $credentials->password,
         ]);
 
-        if (! is_string($token)) {
+        if ($token === false) {
             throw new InvalidCredentialsException;
         }
 

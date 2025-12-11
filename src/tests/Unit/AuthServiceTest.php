@@ -4,24 +4,28 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\DTO\LoginData;
 use App\DTO\RegisterData;
+use App\Exceptions\InvalidCredentialsException;
 use App\Models\User;
 use App\Repositories\UserRepositoryInterface;
 use App\Services\AuthService;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
-use Mockery;
 use Tests\TestCase;
 
 final class AuthServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_register_creates_user_via_repository_and_logs_in(): void
+    /**
+     * @throws BindingResolutionException
+     */
+    public function test_register_creates_user_and_returns_token(): void
     {
-        $userRepository = Mockery::mock(UserRepositoryInterface::class);
-
-        $service = new AuthService($userRepository);
+        /** @var AuthService $service */
+        $service = $this->app->make(AuthService::class);
 
         $data = new RegisterData(
             name: 'John Doe',
@@ -29,23 +33,63 @@ final class AuthServiceTest extends TestCase
             password: 'secret123',
         );
 
-        $user = new User;
-        $user->id = 10;
-        $user->email = $data->email;
-
-        $userRepository
-            ->shouldReceive('create')
-            ->once()
-            ->with($data)
-            ->andReturn($user);
-
-        Auth::shouldReceive('login')
-            ->once()
-            ->with($user)
-            ->andReturn('jwt-token-123');
-
         $token = $service->register($data);
 
-        $this->assertSame('jwt-token-123', $token);
+        $this->assertIsString($token);
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'john@example.com',
+            'name' => 'John Doe',
+        ]);
+
+        $this->assertInstanceOf(User::class, Auth::user());
+        $this->assertEquals('john@example.com', Auth::user()->email);
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function test_login_returns_token_for_valid_credentials(): void
+    {
+        /** @var AuthService $service */
+        $service = $this->app->make(AuthService::class);
+
+        /** @var UserRepositoryInterface $users */
+        $users = $this->app->make(UserRepositoryInterface::class);
+
+        $registerData = new RegisterData(
+            name: 'Jane Doe',
+            email: 'jane@example.com',
+            password: 'password123',
+        );
+
+        $users->create($registerData);
+
+        $loginData = new LoginData(
+            email: 'jane@example.com',
+            password: 'password123',
+        );
+
+        $token = $service->login($loginData);
+
+        $this->assertIsString($token);
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function test_login_throws_exception_for_invalid_credentials(): void
+    {
+        /** @var AuthService $service */
+        $service = $this->app->make(AuthService::class);
+
+        $loginData = new LoginData(
+            email: 'notexists@example.com',
+            password: 'wrong-password',
+        );
+
+        $this->expectException(InvalidCredentialsException::class);
+
+        $service->login($loginData);
     }
 }
