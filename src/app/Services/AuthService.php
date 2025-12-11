@@ -9,20 +9,19 @@ use App\DTO\RegisterData;
 use App\DTO\TokenPayload;
 use App\Enums\TokenType;
 use App\Exceptions\InvalidCredentialsException;
-use App\Models\User;
+use App\Repositories\UserRepositoryInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
-final class AuthService
+final readonly class AuthService
 {
+    public function __construct(
+        private UserRepositoryInterface $userRepository,
+    ) {}
+
     public function register(RegisterData $data): string
     {
-        $user = User::create([
-            'name' => $data->name,
-            'email' => $data->email,
-            'password' => Hash::make($data->password),
-        ]);
+        $user = $this->userRepository->create($data);
 
         return Auth::login($user);
     }
