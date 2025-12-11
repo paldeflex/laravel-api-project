@@ -8,7 +8,7 @@ parameters:
         - database
         - routes
 
-    level: 8
+    level: 10
 
     excludePaths:
         - vendor/*

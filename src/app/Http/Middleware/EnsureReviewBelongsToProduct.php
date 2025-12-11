@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class EnsureReviewBelongsToProduct
 {
+    /**
+     * @param  Closure(Request): Response  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
         $product = $request->route('product');

@@ -10,9 +10,9 @@ use App\DTO\TokenPayload;
 use App\Enums\TokenType;
 use App\Exceptions\InvalidCredentialsException;
 use App\Repositories\UserRepositoryInterface;
-use http\Exception\RuntimeException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
+use RuntimeException;
 
 final readonly class AuthService
 {
@@ -54,10 +54,16 @@ final readonly class AuthService
 
     public function getTokenPayload(string $token): TokenPayload
     {
+        $ttl = config('jwt.ttl');
+
+        if (! is_int($ttl)) {
+            throw new RuntimeException('Invalid jwt.ttl config value.');
+        }
+
         return new TokenPayload(
             accessToken: $token,
             tokenType: TokenType::Bearer->value,
-            expiresIn: config('jwt.ttl') * 60,
+            expiresIn: $ttl * 60,
         );
     }
 
