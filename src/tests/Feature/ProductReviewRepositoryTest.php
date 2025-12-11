@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\DTO\ProductReviewCreateData;
 use App\DTO\ProductReviewUpdateData;
@@ -10,115 +10,111 @@ use App\Enums\ProductStatus;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
-use App\Services\ProductReviewService;
+use App\Repositories\ProductReviewRepositoryInterface;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-final class ProductReviewServiceTest extends TestCase
+final class ProductReviewRepositoryTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_create_review_sets_user_and_product_and_data(): void
+    private ProductReviewRepositoryInterface $repository;
+
+    /**
+     * @throws BindingResolutionException
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->repository = $this->app->make(ProductReviewRepositoryInterface::class);
+    }
+
+    public function test_create_creates_review_with_user_and_product_and_fields(): void
     {
         $user = User::factory()->create();
         $productOwner = User::factory()->create();
 
-        $product = Product::create([
+        $product = Product::factory()->create([
             'user_id' => $productOwner->id,
-            'name' => 'Product',
-            'description' => 'Desc',
-            'quantity' => 10,
-            'price' => 1000,
             'status' => ProductStatus::Published,
         ]);
 
-        $service = $this->app->make(ProductReviewService::class);
-
-        $review = $service->createReview(
-            $product,
-            new ProductReviewCreateData(
-                userId: $user->id,
-                text: 'Nice',
-                rating: 5,
-            )
+        $dto = new ProductReviewCreateData(
+            userId: $user->id,
+            text: 'Great!',
+            rating: 5,
         );
+
+        $review = $this->repository->create($product, $dto);
+
+        $this->assertInstanceOf(ProductReview::class, $review);
+        $this->assertNotNull($review->id);
 
         $this->assertDatabaseHas('product_reviews', [
             'id' => $review->id,
             'product_id' => $product->id,
             'user_id' => $user->id,
-            'text' => 'Nice',
+            'text' => 'Great!',
             'rating' => 5,
         ]);
     }
 
-    public function test_update_review_updates_fields(): void
+    public function test_update_updates_review_fields(): void
     {
         $user = User::factory()->create();
         $productOwner = User::factory()->create();
 
-        $product = Product::create([
+        $product = Product::factory()->create([
             'user_id' => $productOwner->id,
-            'name' => 'Product',
-            'description' => 'Desc',
-            'quantity' => 10,
-            'price' => 1000,
             'status' => ProductStatus::Published,
         ]);
 
         $review = new ProductReview([
-            'text' => 'Old',
+            'text' => 'Old text',
             'rating' => 3,
         ]);
 
         $review->user()->associate($user);
         $product->productReviews()->save($review);
 
-        $service = $this->app->make(ProductReviewService::class);
+        $dto = ProductReviewUpdateData::fromArray([
+            'text' => 'Updated text',
+            'rating' => 4,
+        ]);
 
-        $updated = $service->updateReview(
-            $review,
-            new ProductReviewUpdateData(
-                text: 'Updated',
-                rating: 4,
-            )
-        );
+        $updated = $this->repository->update($review, $dto);
 
-        $this->assertEquals('Updated', $updated->text);
+        $this->assertEquals('Updated text', $updated->text);
         $this->assertEquals(4, $updated->rating);
 
         $this->assertDatabaseHas('product_reviews', [
             'id' => $review->id,
-            'text' => 'Updated',
+            'text' => 'Updated text',
             'rating' => 4,
         ]);
     }
 
-    public function test_delete_review_soft_deletes_record(): void
+    public function test_delete_soft_deletes_review(): void
     {
         $user = User::factory()->create();
         $productOwner = User::factory()->create();
 
-        $product = Product::create([
+        $product = Product::factory()->create([
             'user_id' => $productOwner->id,
-            'name' => 'Product',
-            'description' => 'Desc',
-            'quantity' => 10,
-            'price' => 1000,
             'status' => ProductStatus::Published,
         ]);
 
         $review = new ProductReview([
-            'text' => 'Text',
-            'rating' => 3,
+            'text' => 'Some text',
+            'rating' => 4,
         ]);
 
         $review->user()->associate($user);
         $product->productReviews()->save($review);
 
-        $service = $this->app->make(ProductReviewService::class);
-
-        $service->deleteReview($review);
+        $this->repository->delete($review);
 
         $this->assertSoftDeleted('product_reviews', [
             'id' => $review->id,

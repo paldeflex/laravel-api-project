@@ -47,7 +47,7 @@ final class ProductRepositoryTest extends TestCase
         $productWithRelations = $publishedProducts->first();
 
         $productWithRelations->productImages()->create([
-            'path' => 'products/' . $productWithRelations->id . '/image1.jpg',
+            'path' => 'products/'.$productWithRelations->id.'/image1.jpg',
         ]);
 
         $productWithRelations->productReviews()->createMany([
@@ -82,7 +82,6 @@ final class ProductRepositoryTest extends TestCase
         $this->assertNotNull($found->product_reviews_avg_rating);
         $this->assertEquals(4.5, (float) $found->product_reviews_avg_rating);
     }
-
 
     public function test_create_creates_product_with_correct_fields(): void
     {

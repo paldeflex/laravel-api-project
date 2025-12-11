@@ -6,6 +6,8 @@ namespace App\Providers;
 
 use App\Repositories\ProductRepository;
 use App\Repositories\ProductRepositoryInterface;
+use App\Repositories\ProductReviewRepository;
+use App\Repositories\ProductReviewRepositoryInterface;
 use App\Services\ProductImageStorage;
 use App\Services\ProductImageStorageInterface;
 use Illuminate\Support\ServiceProvider;
@@ -22,6 +24,11 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             ProductImageStorageInterface::class,
             ProductImageStorage::class,
+        );
+
+        $this->app->bind(
+            ProductReviewRepositoryInterface::class,
+            ProductReviewRepository::class,
         );
     }
 

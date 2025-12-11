@@ -9,6 +9,6 @@ final readonly class TokenPayload
     public function __construct(
         public string $accessToken,
         public string $tokenType,
-        public int    $expiresIn,
+        public int $expiresIn,
     ) {}
 }

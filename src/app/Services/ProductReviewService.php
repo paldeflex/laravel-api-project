@@ -8,32 +8,26 @@ use App\DTO\ProductReviewCreateData;
 use App\DTO\ProductReviewUpdateData;
 use App\Models\Product;
 use App\Models\ProductReview;
+use App\Repositories\ProductReviewRepositoryInterface;
 
-final class ProductReviewService
+final readonly class ProductReviewService
 {
+    public function __construct(
+        private ProductReviewRepositoryInterface $reviewRepository,
+    ) {}
+
     public function createReview(Product $product, ProductReviewCreateData $data): ProductReview
     {
-        /** @var ProductReview $review */
-        $review = $product
-            ->productReviews()
-            ->create([
-                'user_id' => $data->userId,
-                'text' => $data->text,
-                'rating' => $data->rating,
-            ]);
-
-        return $review;
+        return $this->reviewRepository->create($product, $data);
     }
 
     public function updateReview(ProductReview $review, ProductReviewUpdateData $data): ProductReview
     {
-        $review->update($data->toArray());
-
-        return $review;
+        return $this->reviewRepository->update($review, $data);
     }
 
     public function deleteReview(ProductReview $review): void
     {
-        $review->delete();
+        $this->reviewRepository->delete($review);
     }
 }

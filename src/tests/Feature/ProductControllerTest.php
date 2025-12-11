@@ -9,6 +9,7 @@ use App\Enums\ProductStatus;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\ProductReviewService;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -46,6 +47,9 @@ final class ProductControllerTest extends TestCase
         $response->assertJsonPath('data.0.name', 'Published product');
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
     public function test_index_returns_rating_for_published_product(): void
     {
         $user = User::factory()->create();
@@ -59,7 +63,7 @@ final class ProductControllerTest extends TestCase
             'status' => ProductStatus::Published,
         ]);
 
-        $reviewService = new ProductReviewService;
+        $reviewService = $this->app->make(ProductReviewService::class);
 
         $reviewService->createReview(
             $product,
@@ -87,6 +91,9 @@ final class ProductControllerTest extends TestCase
         $response->assertJsonPath('data.0.rating', 4.5);
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
     public function test_show_returns_published_product_with_reviews_and_images(): void
     {
         $user = User::factory()->create();
@@ -104,7 +111,7 @@ final class ProductControllerTest extends TestCase
             'path' => 'products/'.$product->id.'/image.jpg',
         ]);
 
-        $reviewService = new ProductReviewService;
+        $reviewService = $this->app->make(ProductReviewService::class);
 
         $review = $reviewService->createReview(
             $product,

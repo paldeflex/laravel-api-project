@@ -88,7 +88,7 @@ final class ProductServiceTest extends TestCase
 
     public function test_update_product_calls_repository_and_image_storage(): void
     {
-        $product = new Product();
+        $product = new Product;
         $product->id = 123;
         $product->name = 'Old name';
 
@@ -123,7 +123,7 @@ final class ProductServiceTest extends TestCase
 
     public function test_get_product_for_show_calls_repository(): void
     {
-        $product = new Product();
+        $product = new Product;
         $product->id = 55;
 
         $this->productRepository
@@ -139,7 +139,7 @@ final class ProductServiceTest extends TestCase
 
     public function test_delete_product_calls_repository_delete(): void
     {
-        $product = new Product();
+        $product = new Product;
         $product->id = 777;
 
         $this->productRepository
@@ -151,5 +151,4 @@ final class ProductServiceTest extends TestCase
 
         $this->assertTrue(true);
     }
-
 }
