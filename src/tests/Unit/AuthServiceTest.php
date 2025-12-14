@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\DTO\LoginData;
-use App\DTO\RegisterData;
+use App\DTO\Auth\LoginData;
+use App\DTO\Auth\RegisterData;
 use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Models\User;
-use App\Repositories\UserRepositoryInterface;
-use App\Services\AuthService;
+use App\Repositories\Contracts\Users\UserRepositoryInterface;
+use App\Services\Auth\AuthService;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;

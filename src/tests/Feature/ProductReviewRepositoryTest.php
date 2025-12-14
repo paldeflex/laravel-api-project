@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\DTO\ProductReviewCreateData;
-use App\DTO\ProductReviewUpdateData;
-use App\Enums\ProductStatus;
+use App\DTO\Reviews\ProductReviewCreateData;
+use App\DTO\Reviews\ProductReviewUpdateData;
+use App\Enums\Products\ProductStatus;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
-use App\Repositories\ProductReviewRepositoryInterface;
+use App\Repositories\Contracts\Reviews\ProductReviewRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

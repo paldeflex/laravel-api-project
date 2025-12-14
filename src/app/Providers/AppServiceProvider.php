@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Repositories\ProductRepository;
-use App\Repositories\ProductRepositoryInterface;
-use App\Repositories\ProductReviewRepository;
-use App\Repositories\ProductReviewRepositoryInterface;
-use App\Repositories\UserRepository;
-use App\Repositories\UserRepositoryInterface;
+use App\Repositories\Contracts\Products\ProductRepositoryInterface;
+use App\Repositories\Contracts\Reviews\ProductReviewRepositoryInterface;
+use App\Repositories\Contracts\Users\UserRepositoryInterface;
+use App\Repositories\Products\ProductRepository;
+use App\Repositories\Reviews\ProductReviewRepository;
+use App\Repositories\Users\UserRepository;
 use App\Services\Auth\JwtConfigTokenTtlProvider;
 use App\Services\Contracts\Auth\TokenTtlProviderInterface;
-use App\Services\ProductImageStorage;
-use App\Services\ProductImageStorageInterface;
+use App\Services\Contracts\Products\ProductImageStorageInterface;
+use App\Services\Products\ProductImageStorage;
 use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider

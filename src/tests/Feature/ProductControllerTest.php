@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\DTO\ProductReviewCreateData;
-use App\Enums\ProductStatus;
+use App\DTO\Reviews\ProductReviewCreateData;
+use App\Enums\Products\ProductStatus;
 use App\Models\Product;
 use App\Models\User;
-use App\Services\ProductReviewService;
+use App\Services\Reviews\ProductReviewService;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpFoundation\Response;

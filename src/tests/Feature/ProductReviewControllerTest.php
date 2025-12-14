@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Enums\ProductStatus;
+use App\Enums\Products\ProductStatus;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
