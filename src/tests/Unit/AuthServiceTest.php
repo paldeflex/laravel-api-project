@@ -6,7 +6,7 @@ namespace Tests\Unit;
 
 use App\DTO\LoginData;
 use App\DTO\RegisterData;
-use App\Exceptions\InvalidCredentialsException;
+use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Models\User;
 use App\Repositories\UserRepositoryInterface;
 use App\Services\AuthService;

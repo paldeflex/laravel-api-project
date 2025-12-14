@@ -8,8 +8,9 @@ use App\DTO\LoginData;
 use App\DTO\RegisterData;
 use App\DTO\TokenPayload;
 use App\Enums\TokenType;
-use App\Exceptions\InvalidCredentialsException;
+use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Repositories\UserRepositoryInterface;
+use App\Services\Contracts\Auth\TokenTtlProviderInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use RuntimeException;
@@ -18,6 +19,7 @@ final readonly class AuthService
 {
     public function __construct(
         private UserRepositoryInterface $userRepository,
+        private TokenTtlProviderInterface $ttlProvider,
     ) {}
 
     public function register(RegisterData $data): string
@@ -54,18 +56,13 @@ final readonly class AuthService
 
     public function getTokenPayload(string $token): TokenPayload
     {
-        $ttl = config('jwt.ttl');
-
-        if (! is_int($ttl)) {
-            throw new RuntimeException('Invalid jwt.ttl config value.');
-        }
-
         return new TokenPayload(
             accessToken: $token,
             tokenType: TokenType::Bearer->value,
-            expiresIn: $ttl * 60,
+            expiresIn: $this->ttlProvider->accessTokenTtlSeconds(),
         );
     }
+
 
     public function currentUser(): Authenticatable
     {

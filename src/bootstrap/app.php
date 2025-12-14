@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Exceptions\InvalidCredentialsException;
+use App\Exceptions\Auth\InvalidCredentialsException;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\EnsureProductIsPublished;
 use App\Http\Middleware\EnsureReviewBelongsToProduct;

@@ -10,6 +10,8 @@ use App\Repositories\ProductReviewRepository;
 use App\Repositories\ProductReviewRepositoryInterface;
 use App\Repositories\UserRepository;
 use App\Repositories\UserRepositoryInterface;
+use App\Services\Auth\JwtConfigTokenTtlProvider;
+use App\Services\Contracts\Auth\TokenTtlProviderInterface;
 use App\Services\ProductImageStorage;
 use App\Services\ProductImageStorageInterface;
 use Illuminate\Support\ServiceProvider;
@@ -36,6 +38,11 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             UserRepositoryInterface::class,
             UserRepository::class,
+        );
+
+        $this->app->singleton(
+            TokenTtlProviderInterface::class,
+            JwtConfigTokenTtlProvider::class,
         );
     }
 
