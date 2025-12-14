@@ -20,22 +20,22 @@ final class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(
+        $this->app->singleton(
             ProductRepositoryInterface::class,
             ProductRepository::class,
         );
 
-        $this->app->bind(
+        $this->app->singleton(
             ProductImageStorageInterface::class,
             ProductImageStorage::class,
         );
 
-        $this->app->bind(
+        $this->app->singleton(
             ProductReviewRepositoryInterface::class,
             ProductReviewRepository::class,
         );
 
-        $this->app->bind(
+        $this->app->singleton(
             UserRepositoryInterface::class,
             UserRepository::class,
         );
