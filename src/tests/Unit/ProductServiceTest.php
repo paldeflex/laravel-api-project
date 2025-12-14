@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\DTO\ProductCreateData;
-use App\DTO\ProductUpdateData;
-use App\Enums\ProductStatus;
+use App\DTO\Products\ProductCreateData;
+use App\DTO\Products\ProductUpdateData;
+use App\Enums\Products\ProductStatus;
 use App\Models\Product;
-use App\Repositories\ProductRepositoryInterface;
-use App\Services\ProductImageStorageInterface;
-use App\Services\ProductService;
+use App\Repositories\Contracts\Products\ProductRepositoryInterface;
+use App\Services\Contracts\Products\ProductImageStorageInterface;
+use App\Services\Products\ProductService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Mockery;

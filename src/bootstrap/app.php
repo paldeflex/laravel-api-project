@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Exceptions\InvalidCredentialsException;
-use App\Http\Middleware\AdminMiddleware;
-use App\Http\Middleware\EnsureProductIsPublished;
-use App\Http\Middleware\EnsureReviewBelongsToProduct;
+use App\Exceptions\Auth\InvalidCredentialsException;
+use App\Http\Middleware\Auth\AdminMiddleware;
+use App\Http\Middleware\Products\EnsureProductIsPublished;
+use App\Http\Middleware\Reviews\EnsureReviewBelongsToProduct;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Enums\ProductStatus;
+use App\Enums\Products\ProductStatus;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 final class ProductReviewControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_authenticated_user_can_create_review_for_published_product(): void
     {

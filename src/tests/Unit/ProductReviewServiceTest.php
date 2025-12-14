@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\DTO\ProductReviewCreateData;
-use App\DTO\ProductReviewUpdateData;
-use App\Enums\ProductStatus;
+use App\DTO\Reviews\ProductReviewCreateData;
+use App\DTO\Reviews\ProductReviewUpdateData;
+use App\Enums\Products\ProductStatus;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
-use App\Services\ProductReviewService;
+use App\Services\Reviews\ProductReviewService;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 final class ProductReviewServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     /**
      * @throws BindingResolutionException
