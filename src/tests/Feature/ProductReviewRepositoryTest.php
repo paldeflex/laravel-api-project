@@ -12,12 +12,12 @@ use App\Models\ProductReview;
 use App\Models\User;
 use App\Repositories\Contracts\Reviews\ProductReviewRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 final class ProductReviewRepositoryTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private ProductReviewRepositoryInterface $repository;
 

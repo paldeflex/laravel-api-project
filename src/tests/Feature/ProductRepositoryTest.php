@@ -11,12 +11,12 @@ use App\Models\Product;
 use App\Models\User;
 use App\Repositories\Products\ProductRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 final class ProductRepositoryTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private ProductRepository $repository;
 
