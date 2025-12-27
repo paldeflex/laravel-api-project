@@ -47,6 +47,29 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:alpine
+    container_name: laravel_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - laravel_network
+
+  queue:
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    container_name: laravel_queue
+    volumes:
+      - ./src:/var/www/html
+    command: php artisan queue:work redis --verbose --tries=5 --timeout=90
+    depends_on:
+      - php
+      - redis
+    networks:
+      - laravel_network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
 

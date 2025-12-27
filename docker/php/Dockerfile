@@ -21,6 +21,8 @@ RUN echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/docker-php-memory.in
     && echo "post_max_size = 64M" >> /usr/local/etc/php/conf.d/docker-php-memory.ini \
     && echo "max_execution_time = 600" >> /usr/local/etc/php/conf.d/docker-php-memory.ini
 
+RUN pecl install redis && docker-php-ext-enable redis
+
 WORKDIR /var/www/html
 
 RUN groupadd -g 1000 www && useradd -u 1000 -ms /bin/bash -g www www
