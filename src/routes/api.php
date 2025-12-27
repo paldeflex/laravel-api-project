@@ -31,7 +31,6 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('products/{product}/reviews/{review}', [ProductReviewController::class, 'destroy'])
         ->middleware('review.belongs-to-product');
 
-
     Route::get('reports', [ReportController::class, 'index']);
     Route::post('reports', [ReportController::class, 'store']);
     Route::get('reports/{report}', [ReportController::class, 'show']);

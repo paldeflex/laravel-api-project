@@ -56,7 +56,6 @@ final class ReportController extends Controller
         ], Response::HTTP_ACCEPTED);
     }
 
-
     /**
      * Get report status.
      */
