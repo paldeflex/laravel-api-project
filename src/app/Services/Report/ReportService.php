@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Report;
 
+use App\DTO\Report\GenerateReportData;
 use App\Enums\Report\ReportStatus;
-use App\Enums\Report\ReportType;
 use App\Jobs\GenerateExcelReportJob;
 use App\Models\ReportLog;
 use App\Models\User;
@@ -18,11 +18,11 @@ final readonly class ReportService
     /**
      * Queue a new report generation.
      */
-    public function queueReport(User $user, ReportType $reportType): ReportLog
+    public function queueReport(GenerateReportData $data): ReportLog
     {
         $reportLog = ReportLog::create([
-            'user_id' => $user->id,
-            'report_type' => $reportType,
+            'user_id' => $data->userId,
+            'report_type' => $data->reportType,
             'status' => ReportStatus::Pending,
         ]);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\DTO\Report\GenerateReportData;
 use App\Http\Requests\Report\GenerateReportRequest;
 use App\Http\Resources\Report\ReportLogResource;
 use App\Models\ReportLog;
@@ -42,16 +43,19 @@ final class ReportController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $reportLog = $this->reportService->queueReport(
-            user: $user,
+        $dto = new GenerateReportData(
+            userId: $user->id,
             reportType: $request->getReportType(),
         );
+
+        $reportLog = $this->reportService->queueReport($dto);
 
         return response()->json([
             'message' => 'Report generation queued successfully',
             'data' => new ReportLogResource($reportLog),
         ], Response::HTTP_ACCEPTED);
     }
+
 
     /**
      * Get report status.
