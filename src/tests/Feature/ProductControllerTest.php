@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\DTO\ProductReviewCreateData;
-use App\Enums\ProductStatus;
+use App\DTO\Reviews\ProductReviewCreateData;
+use App\Enums\Products\ProductStatus;
 use App\Models\Product;
 use App\Models\User;
-use App\Services\ProductReviewService;
+use App\Services\Reviews\ProductReviewService;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 final class ProductControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_index_returns_only_published_products(): void
     {
