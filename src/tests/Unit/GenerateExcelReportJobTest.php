@@ -11,11 +11,13 @@ use App\Models\ReportLog;
 use App\Models\User;
 use App\Services\Contracts\Report\ReportLogServiceInterface;
 use App\Services\Report\ReportLogService;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
+use Throwable;
 
 final class GenerateExcelReportJobTest extends TestCase
 {
@@ -71,7 +73,7 @@ final class GenerateExcelReportJobTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function test_job_calls_service_mark_as_processing(): void
     {
@@ -96,7 +98,7 @@ final class GenerateExcelReportJobTest extends TestCase
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function test_job_calls_service_mark_as_completed_on_success(): void
     {
@@ -143,7 +145,7 @@ final class GenerateExcelReportJobTest extends TestCase
             );
 
         $job = new GenerateExcelReportJob($reportLog, $serviceMock);
-        $job->failed(new \Exception('Test error message'));
+        $job->failed(new Exception('Test error message'));
     }
 
     public function test_job_dispatched_with_correct_report_type(): void
