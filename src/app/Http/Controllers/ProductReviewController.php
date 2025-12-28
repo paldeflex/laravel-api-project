@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\DTO\ProductReviewCreateData;
-use App\DTO\ProductReviewUpdateData;
-use App\Http\Requests\StoreProductReviewRequest;
-use App\Http\Requests\UpdateProductReviewRequest;
-use App\Http\Resources\ProductReviewResource;
+use App\DTO\Reviews\ProductReviewCreateData;
+use App\DTO\Reviews\ProductReviewUpdateData;
+use App\Http\Requests\Reviews\StoreProductReviewRequest;
+use App\Http\Requests\Reviews\UpdateProductReviewRequest;
+use App\Http\Resources\Reviews\ProductReviewResource;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\User;
-use App\Services\ProductReviewService;
+use App\Services\Reviews\ProductReviewService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\DTO\ProductCreateData;
-use App\DTO\ProductUpdateData;
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
-use App\Http\Resources\ProductDetailResource;
-use App\Http\Resources\ProductListResource;
+use App\DTO\Products\ProductCreateData;
+use App\DTO\Products\ProductUpdateData;
+use App\Http\Requests\Products\StoreProductRequest;
+use App\Http\Requests\Products\UpdateProductRequest;
+use App\Http\Resources\Products\ProductDetailResource;
+use App\Http\Resources\Products\ProductListResource;
 use App\Models\Product;
 use App\Models\User;
-use App\Services\ProductService;
+use App\Services\Products\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\Response;
