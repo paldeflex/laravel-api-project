@@ -27,19 +27,12 @@ final class TelegramLogHandlerTest extends TestCase
         $this->handler = new TelegramLogHandler($this->messenger, Level::Critical);
     }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-
-        parent::tearDown();
-    }
-
     public function test_handles_critical_level_logs(): void
     {
         $this->messenger
-            ->shouldReceive('sendFormatted')
+            ->shouldReceive('send')
             ->once()
-            ->with('test-channel', 'Critical error occurred', 'Critical')
+            ->with('Application Log', 'Critical error occurred', 'Critical')
             ->andReturn(true);
 
         $record = new LogRecord(
@@ -53,16 +46,15 @@ final class TelegramLogHandlerTest extends TestCase
 
         $this->handler->handle($record);
 
-        // Mockery verifies sendFormatted was called
         $this->assertTrue(true);
     }
 
     public function test_handles_emergency_level_logs(): void
     {
         $this->messenger
-            ->shouldReceive('sendFormatted')
+            ->shouldReceive('send')
             ->once()
-            ->with('test-channel', 'System down!', 'Emergency')
+            ->with('Application Log', 'System down!', 'Emergency')
             ->andReturn(true);
 
         $record = new LogRecord(
@@ -76,14 +68,13 @@ final class TelegramLogHandlerTest extends TestCase
 
         $this->handler->handle($record);
 
-        // Mockery verifies sendFormatted was called
         $this->assertTrue(true);
     }
 
     public function test_ignores_lower_level_logs(): void
     {
         $this->messenger
-            ->shouldNotReceive('sendFormatted');
+            ->shouldNotReceive('send');
 
         $record = new LogRecord(
             datetime: new DateTimeImmutable,
@@ -96,17 +87,16 @@ final class TelegramLogHandlerTest extends TestCase
 
         $result = $this->handler->handle($record);
 
-        // Handler returns false for unhandled (below threshold) logs
         $this->assertFalse($result);
     }
 
     public function test_includes_context_in_message(): void
     {
         $this->messenger
-            ->shouldReceive('sendFormatted')
+            ->shouldReceive('send')
             ->once()
             ->withArgs(function (string $title, string $body, string $level) {
-                return $title === 'test-channel'
+                return $title === 'Application Log'
                     && str_contains($body, 'Error message')
                     && str_contains($body, 'Context')
                     && str_contains($body, 'user_id')
@@ -126,7 +116,6 @@ final class TelegramLogHandlerTest extends TestCase
 
         $this->handler->handle($record);
 
-        // Mockery verifies sendFormatted was called with correct args
         $this->assertTrue(true);
     }
 
@@ -135,7 +124,7 @@ final class TelegramLogHandlerTest extends TestCase
         $exception = new RuntimeException('Something broke', 500);
 
         $this->messenger
-            ->shouldReceive('sendFormatted')
+            ->shouldReceive('send')
             ->once()
             ->withArgs(function (string $title, string $body, string $level) {
                 return str_contains($body, 'RuntimeException')
@@ -155,14 +144,13 @@ final class TelegramLogHandlerTest extends TestCase
 
         $this->handler->handle($record);
 
-        // Mockery verifies exception details were included
         $this->assertTrue(true);
     }
 
     public function test_includes_extra_data_in_message(): void
     {
         $this->messenger
-            ->shouldReceive('sendFormatted')
+            ->shouldReceive('send')
             ->once()
             ->withArgs(function (string $title, string $body, string $level) {
                 return str_contains($body, 'Extra')
@@ -182,7 +170,6 @@ final class TelegramLogHandlerTest extends TestCase
 
         $this->handler->handle($record);
 
-        // Mockery verifies extra data was included
         $this->assertTrue(true);
     }
 }

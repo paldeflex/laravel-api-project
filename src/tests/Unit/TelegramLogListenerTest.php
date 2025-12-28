@@ -25,13 +25,6 @@ final class TelegramLogListenerTest extends TestCase
         $this->listener = new TelegramLogListener($this->messenger);
     }
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-
-        parent::tearDown();
-    }
-
     public function test_handle_sends_formatted_message(): void
     {
         $event = new CriticalLogEvent(
@@ -41,7 +34,7 @@ final class TelegramLogListenerTest extends TestCase
         );
 
         $this->messenger
-            ->shouldReceive('sendFormatted')
+            ->shouldReceive('send')
             ->once()
             ->with('Application Log', 'Database connection failed', 'critical')
             ->andReturn(true);
@@ -60,7 +53,7 @@ final class TelegramLogListenerTest extends TestCase
         );
 
         $this->messenger
-            ->shouldReceive('sendFormatted')
+            ->shouldReceive('send')
             ->once()
             ->withArgs(function (string $title, string $body, string $level) {
                 return $title === 'Application Log'
@@ -88,7 +81,7 @@ final class TelegramLogListenerTest extends TestCase
         );
 
         $this->messenger
-            ->shouldReceive('sendFormatted')
+            ->shouldReceive('send')
             ->once()
             ->withArgs(function (string $title, string $body, string $level) {
                 return str_contains($body, 'RuntimeException')

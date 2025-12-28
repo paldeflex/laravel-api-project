@@ -13,18 +13,10 @@ interface MessengerInterface
     /**
      * Send a message to the configured recipient.
      *
-     * @param  string  $message  The message content to send
+     * @param string $title
+     * @param string $body
+     * @param string|null $level
      * @return bool True if message was sent successfully
      */
-    public function send(string $message): bool;
-
-    /**
-     * Send a formatted message with title and body.
-     *
-     * @param  string  $title  Message title/subject
-     * @param  string  $body  Message body content
-     * @param  string|null  $level  Optional severity level (e.g., 'critical', 'emergency')
-     * @return bool True if message was sent successfully
-     */
-    public function sendFormatted(string $title, string $body, ?string $level = null): bool;
+    public function send(string $title, string $body, ?string $level = null): bool;
 }

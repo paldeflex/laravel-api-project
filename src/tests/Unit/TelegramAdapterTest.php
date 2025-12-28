@@ -19,14 +19,13 @@ final class TelegramAdapterTest extends TestCase
 
         $adapter = new TelegramAdapter('test-bot-token', '123456');
 
-        $result = $adapter->send('Test message');
+        $result = $adapter->send('App Error', 'Test message');
 
         $this->assertTrue($result);
 
         Http::assertSent(function ($request) {
             return str_contains($request->url(), 'api.telegram.org/bottest-bot-token/sendMessage')
-                && $request['chat_id'] === '123456'
-                && $request['text'] === 'Test message';
+                && $request['chat_id'] === '123456';
         });
     }
 
@@ -34,7 +33,7 @@ final class TelegramAdapterTest extends TestCase
     {
         $adapter = new TelegramAdapter('', '123456');
 
-        $result = $adapter->send('Test message');
+        $result = $adapter->send('App Error', 'Test message');
 
         $this->assertFalse($result);
     }
@@ -43,7 +42,7 @@ final class TelegramAdapterTest extends TestCase
     {
         $adapter = new TelegramAdapter('test-bot-token', '');
 
-        $result = $adapter->send('Test message');
+        $result = $adapter->send('App Error', 'Test message');
 
         $this->assertFalse($result);
     }
@@ -56,12 +55,12 @@ final class TelegramAdapterTest extends TestCase
 
         $adapter = new TelegramAdapter('test-bot-token', '123456');
 
-        $result = $adapter->send('Test message');
+        $result = $adapter->send('App Error', 'Test message');
 
         $this->assertFalse($result);
     }
 
-    public function test_send_formatted_includes_level_and_emoji(): void
+    public function test_send_includes_level_and_emoji(): void
     {
         Http::fake([
             'api.telegram.org/*' => Http::response(['ok' => true]),
@@ -69,7 +68,7 @@ final class TelegramAdapterTest extends TestCase
 
         $adapter = new TelegramAdapter('test-bot-token', '123456');
 
-        $result = $adapter->sendFormatted('App Error', 'Something went wrong', 'critical');
+        $result = $adapter->send('App Error', 'Something went wrong', 'critical');
 
         $this->assertTrue($result);
 
@@ -83,7 +82,7 @@ final class TelegramAdapterTest extends TestCase
         });
     }
 
-    public function test_send_formatted_uses_emergency_emoji(): void
+    public function test_send_uses_emergency_emoji(): void
     {
         Http::fake([
             'api.telegram.org/*' => Http::response(['ok' => true]),
@@ -91,7 +90,7 @@ final class TelegramAdapterTest extends TestCase
 
         $adapter = new TelegramAdapter('test-bot-token', '123456');
 
-        $adapter->sendFormatted('System Down', 'Critical failure', 'emergency');
+        $adapter->send('System Down', 'Critical failure', 'emergency');
 
         Http::assertSent(function ($request) {
             return str_contains($request['text'], '🚨')
@@ -109,7 +108,7 @@ final class TelegramAdapterTest extends TestCase
 
         $longMessage = str_repeat('a', 5000);
 
-        $adapter->send($longMessage);
+        $adapter->send('Title', $longMessage);
 
         Http::assertSent(function ($request) {
             $text = $request['text'];
@@ -129,7 +128,7 @@ final class TelegramAdapterTest extends TestCase
 
         $adapter = new TelegramAdapter('test-bot-token', '123456');
 
-        $result = $adapter->send('Test message');
+        $result = $adapter->send('App Error', 'Test message');
 
         $this->assertFalse($result);
     }

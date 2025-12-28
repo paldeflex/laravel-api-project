@@ -6,58 +6,50 @@ namespace App\Listeners;
 
 use App\Contracts\MessengerInterface;
 use App\Events\CriticalLogEvent;
+use App\Support\JsonFlags;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Throwable;
 
-/**
- * Listener that sends critical log events to Telegram.
- * Implements ShouldQueue to process asynchronously.
- */
 final readonly class TelegramLogListener implements ShouldQueue
 {
-    /**
-     * The name of the queue the job should be sent to.
-     */
     public string $queue;
 
     public function __construct(
         private MessengerInterface $messenger,
     ) {
-        $this->queue = 'logs';
+        /** @var string $queueName */
+        $queueName = config('telegram.queue_name', 'logs');
+        $this->queue = $queueName;
     }
 
-    /**
-     * Handle the event.
-     */
     public function handle(CriticalLogEvent $event): void
     {
+        /** @var string $title */
+        $title = config('telegram.log_title', 'Application Log');
+
         $body = $event->message;
         if ($event->context !== []) {
             $contextString = $this->formatContext($event->context);
             $body .= "\n\n📎 Context:\n".$contextString;
         }
 
-        $this->messenger->sendFormatted(
-            title: 'Application Log',
+        $this->messenger->send(
+            title: $title,
             body: $body,
             level: $event->level,
         );
     }
 
-    /**
-     * Determine whether the listener should be queued.
-     */
     public function shouldQueue(): bool
     {
         /** @var string $botToken */
         $botToken = config('telegram.bot_token', '');
 
         return $botToken !== '';
-
     }
 
     /**
-     * @param  array<string, mixed>  $context
+     * @param array<string, mixed> $context
      */
     private function formatContext(array $context): string
     {
@@ -73,13 +65,13 @@ final readonly class TelegramLogListener implements ShouldQueue
             );
 
             if ($context !== []) {
-                return $exceptionInfo."\n\n".json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                return $exceptionInfo."\n\n".json_encode($context, JsonFlags::READABLE);
             }
 
             return $exceptionInfo;
         }
 
-        $result = json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $result = json_encode($context, JsonFlags::READABLE);
 
         return $result !== false ? $result : '';
     }
