@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\DTO\RegisterData;
-use App\Repositories\UserRepositoryInterface;
+use App\DTO\Auth\RegisterData;
+use App\Repositories\Contracts\Users\UserRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 final class UserRepositoryTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     /**
      * @throws BindingResolutionException

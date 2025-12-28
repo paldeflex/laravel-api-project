@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\DTO\ProductCreateData;
-use App\DTO\ProductUpdateData;
-use App\Enums\ProductStatus;
+use App\DTO\Products\ProductCreateData;
+use App\DTO\Products\ProductUpdateData;
+use App\Enums\Products\ProductStatus;
 use App\Models\Product;
 use App\Models\User;
-use App\Repositories\ProductRepository;
+use App\Repositories\Products\ProductRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 final class ProductRepositoryTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private ProductRepository $repository;
 
