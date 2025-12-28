@@ -13,10 +13,10 @@ use App\Repositories\Users\UserRepository;
 use App\Services\Auth\JwtConfigTokenTtlProvider;
 use App\Services\Contracts\Auth\TokenTtlProviderInterface;
 use App\Services\Contracts\Products\ProductImageStorageInterface;
-use App\Services\Products\ProductImageStorage;
-use Illuminate\Support\ServiceProvider;
-use App\Services\Report\ReportLogService;
 use App\Services\Contracts\Report\ReportLogServiceInterface;
+use App\Services\Products\ProductImageStorage;
+use App\Services\Report\ReportLogService;
+use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider
 {
