@@ -56,7 +56,7 @@ final class TelegramLogHandler extends AbstractProcessingHandler
     }
 
     /**
-     * @param array<string, mixed> $context
+     * @param  array<string, mixed>  $context
      */
     private function formatContext(array $context): string
     {
@@ -78,6 +78,7 @@ final class TelegramLogHandler extends AbstractProcessingHandler
 
             if ($context !== []) {
                 $encoded = json_encode($context, JsonFlags::READABLE);
+
                 return $exceptionInfo."\n\n".($encoded !== false ? $encoded : '');
             }
 
@@ -90,7 +91,7 @@ final class TelegramLogHandler extends AbstractProcessingHandler
     }
 
     /**
-     * @param array<string, mixed> $extra
+     * @param  array<string, mixed>  $extra
      */
     private function formatExtra(array $extra): string
     {

@@ -49,7 +49,7 @@ final readonly class TelegramLogListener implements ShouldQueue
     }
 
     /**
-     * @param array<string, mixed> $context
+     * @param  array<string, mixed>  $context
      */
     private function formatContext(array $context): string
     {

@@ -14,9 +14,11 @@ use Throwable;
 final readonly class TelegramAdapter implements MessengerInterface
 {
     private const string API_URL = 'https://api.telegram.org/bot';
+
     private const string PARSE_MODE = 'HTML';
 
     private string $appEnvironment;
+
     private int $maxMessageLength;
 
     public function __construct(
@@ -36,8 +38,9 @@ final readonly class TelegramAdapter implements MessengerInterface
 
     public function send(string $title, string $body, ?string $level = null): bool
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             Log::warning('Telegram logger not configured: missing bot token or chat ID');
+
             return false;
         }
 
@@ -73,6 +76,7 @@ final readonly class TelegramAdapter implements MessengerInterface
             return $response->successful();
         } catch (Throwable $e) {
             Log::warning('Failed to send Telegram message: '.$e->getMessage());
+
             return false;
         }
     }

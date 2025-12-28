@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Adapters\TelegramAdapter;
+use App\Contracts\MessengerInterface;
+use App\Events\CriticalLogEvent;
+use App\Listeners\TelegramLogListener;
 use App\Repositories\Contracts\Products\ProductRepositoryInterface;
 use App\Repositories\Contracts\Reviews\ProductReviewRepositoryInterface;
 use App\Repositories\Contracts\Users\UserRepositoryInterface;
@@ -14,12 +18,8 @@ use App\Services\Auth\JwtConfigTokenTtlProvider;
 use App\Services\Contracts\Auth\TokenTtlProviderInterface;
 use App\Services\Contracts\Products\ProductImageStorageInterface;
 use App\Services\Products\ProductImageStorage;
-use Illuminate\Support\ServiceProvider;
-use App\Adapters\TelegramAdapter;
-use App\Contracts\MessengerInterface;
-use App\Events\CriticalLogEvent;
-use App\Listeners\TelegramLogListener;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider
 {

@@ -6,6 +6,4 @@ namespace App\Exceptions\Auth;
 
 use RuntimeException;
 
-final class InvalidJwtConfigException extends RuntimeException
-{
-}
+final class InvalidJwtConfigException extends RuntimeException {}

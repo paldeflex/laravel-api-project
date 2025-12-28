@@ -33,7 +33,7 @@ final readonly class AuthService
         ]);
 
         if ($token === false) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException;
         }
 
         return $token;
@@ -48,7 +48,7 @@ final readonly class AuthService
         ]);
 
         if ($token === false) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException;
         }
 
         return $token;
@@ -62,7 +62,6 @@ final readonly class AuthService
             expiresIn: $this->ttlProvider->accessTokenTtlSeconds(),
         );
     }
-
 
     public function currentUser(): Authenticatable
     {

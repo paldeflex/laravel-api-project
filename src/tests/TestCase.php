@@ -8,8 +8,8 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 abstract class TestCase extends BaseTestCase
 {
-    use MockeryPHPUnitIntegration;
     use CreatesApplication;
+    use MockeryPHPUnitIntegration;
 
     private static bool $migrationsRun = false;
 
