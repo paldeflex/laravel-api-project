@@ -62,32 +62,4 @@ final class ReportLog extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    public function markAsProcessing(): void
-    {
-        $this->update([
-            'status' => ReportStatus::Processing,
-            'started_at' => now(),
-            'attempts' => $this->attempts + 1,
-        ]);
-    }
-
-    public function markAsCompleted(string $fileName, string $filePath): void
-    {
-        $this->update([
-            'status' => ReportStatus::Completed,
-            'file_name' => $fileName,
-            'file_path' => $filePath,
-            'completed_at' => now(),
-        ]);
-    }
-
-    public function markAsFailed(string $errorMessage): void
-    {
-        $this->update([
-            'status' => ReportStatus::Failed,
-            'error_message' => $errorMessage,
-            'completed_at' => now(),
-        ]);
-    }
 }

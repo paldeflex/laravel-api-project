@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
+use App\Exports\Concerns\FormatsDateTime;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -18,6 +19,8 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
  */
 final class UsersExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
+    use FormatsDateTime;
+
     /**
      * @return Collection<int, User>
      */
@@ -32,12 +35,12 @@ final class UsersExport implements FromCollection, ShouldAutoSize, WithHeadings,
     public function headings(): array
     {
         return [
-            'ID',
-            'Name',
-            'Email',
-            'Is Admin',
-            'Reviews Count',
-            'Created At',
+            __('exports.users.id'),
+            __('exports.users.name'),
+            __('exports.users.email'),
+            __('exports.users.is_admin'),
+            __('exports.users.reviews_count'),
+            __('exports.users.created_at'),
         ];
     }
 
@@ -54,9 +57,9 @@ final class UsersExport implements FromCollection, ShouldAutoSize, WithHeadings,
             $row->id,
             $row->name,
             $row->email,
-            $row->is_admin ? 'Yes' : 'No',
+            $row->is_admin ? __('exports.common.yes') : __('exports.common.no'),
             $reviewsCount,
-            $row->created_at?->format('Y-m-d H:i:s'),
+            $this->formatDateTime($row->created_at),
         ];
     }
 

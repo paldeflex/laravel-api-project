@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
+use App\Exports\Concerns\FormatsDateTime;
 use App\Models\Product;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -18,6 +19,8 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
  */
 final class ProductsExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
+    use FormatsDateTime;
+
     /**
      * @return Collection<int, Product>
      */
@@ -32,14 +35,14 @@ final class ProductsExport implements FromCollection, ShouldAutoSize, WithHeadin
     public function headings(): array
     {
         return [
-            'ID',
-            'Name',
-            'Description',
-            'Price',
-            'Quantity',
-            'Status',
-            'Owner',
-            'Created At',
+            __('exports.products.id'),
+            __('exports.products.name'),
+            __('exports.products.description'),
+            __('exports.products.price'),
+            __('exports.products.quantity'),
+            __('exports.products.status'),
+            __('exports.products.owner'),
+            __('exports.products.created_at'),
         ];
     }
 
@@ -52,17 +55,22 @@ final class ProductsExport implements FromCollection, ShouldAutoSize, WithHeadin
         return [
             $row->id,
             $row->name,
-            $row->description ?? '-',
-            $row->price !== null ? number_format($row->price / 100, 2) : '-',
+            $row->description ?? __('exports.common.empty'),
+            $row->price !== null ? $this->convertCentsToDecimal($row->price) : __('exports.common.empty'),
             $row->quantity ?? 0,
             $row->status->value,
-            $row->user !== null ? $row->user->name : '-',
-            $row->created_at?->format('Y-m-d H:i:s'),
+            $row->user->name ?? __('exports.common.empty'),
+            $this->formatDateTime($row->created_at),
         ];
     }
 
     public function styles(Worksheet $sheet): void
     {
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+    }
+
+    private function convertCentsToDecimal(int $cents): string
+    {
+        return number_format($cents / 100, 2);
     }
 }

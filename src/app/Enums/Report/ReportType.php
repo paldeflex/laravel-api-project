@@ -12,10 +12,6 @@ enum ReportType: string
 
     public function label(): string
     {
-        return match ($this) {
-            self::Products => 'Отчёт по товарам',
-            self::ProductReviews => 'Отчёт по отзывам о товарах',
-            self::Users => 'Отчёт по пользователям',
-        };
+        return __('enums.report_type.'.$this->value);
     }
 }

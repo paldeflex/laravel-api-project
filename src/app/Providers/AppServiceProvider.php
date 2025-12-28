@@ -10,8 +10,10 @@ use App\Repositories\ProductReviewRepository;
 use App\Repositories\ProductReviewRepositoryInterface;
 use App\Repositories\UserRepository;
 use App\Repositories\UserRepositoryInterface;
+use App\Services\Contracts\Report\ReportLogServiceInterface;
 use App\Services\ProductImageStorage;
 use App\Services\ProductImageStorageInterface;
+use App\Services\Report\ReportLogService;
 use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider
@@ -36,6 +38,11 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             UserRepositoryInterface::class,
             UserRepository::class,
+        );
+
+        $this->app->singleton(
+            ReportLogServiceInterface::class,
+            ReportLogService::class,
         );
     }
 

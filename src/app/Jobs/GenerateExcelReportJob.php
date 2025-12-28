@@ -9,6 +9,7 @@ use App\Exports\ProductReviewsExport;
 use App\Exports\ProductsExport;
 use App\Exports\UsersExport;
 use App\Models\ReportLog;
+use App\Services\Contracts\Report\ReportLogServiceInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -22,29 +23,18 @@ final class GenerateExcelReportJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Maximum number of attempts.
-     */
     public int $tries = 5;
 
-    /**
-     * Maximum number of unhandled exceptions before failing.
-     */
     public int $maxExceptions = 5;
 
-    /**
-     * Delete the job if its models no longer exist.
-     */
     public bool $deleteWhenMissingModels = true;
 
     public function __construct(
         public readonly ReportLog $reportLog,
+        private readonly ?ReportLogServiceInterface $reportLogService = null,
     ) {}
 
     /**
-     * Calculate the number of seconds to wait before retrying the job.
-     * Uses exponential backoff: 3s, 15s, 30s, 60s, 120s.
-     *
      * @return array<int, int>
      */
     public function backoff(): array
@@ -57,7 +47,8 @@ final class GenerateExcelReportJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->reportLog->markAsProcessing();
+        $service = $this->getReportLogService();
+        $service->markAsProcessing($this->reportLog);
 
         Log::info('Starting report generation', [
             'report_log_id' => $this->reportLog->id,
@@ -69,11 +60,13 @@ final class GenerateExcelReportJob implements ShouldQueue
         try {
             $export = $this->getExportClass();
             $fileName = $this->generateFileName();
-            $filePath = 'reports/'.$fileName;
+            $filePath = $this->getStoragePath().'/'.$fileName;
 
-            Excel::store($export, $filePath, 'local');
+            /** @var string $disk */
+            $disk = config('reports.storage_disk', 'local');
+            Excel::store($export, $filePath, $disk);
 
-            $this->reportLog->markAsCompleted($fileName, $filePath);
+            $service->markAsCompleted($this->reportLog, $fileName, $filePath);
 
             Log::info('Report generated successfully', [
                 'report_log_id' => $this->reportLog->id,
@@ -97,7 +90,7 @@ final class GenerateExcelReportJob implements ShouldQueue
     {
         $errorMessage = $exception?->getMessage() ?? 'Unknown error';
 
-        $this->reportLog->markAsFailed($errorMessage);
+        $this->getReportLogService()->markAsFailed($this->reportLog, $errorMessage);
 
         Log::error('Report generation permanently failed', [
             'report_log_id' => $this->reportLog->id,
@@ -105,6 +98,11 @@ final class GenerateExcelReportJob implements ShouldQueue
             'error' => $errorMessage,
             'total_attempts' => $this->reportLog->attempts,
         ]);
+    }
+
+    private function getReportLogService(): ReportLogServiceInterface
+    {
+        return $this->reportLogService ?? app(ReportLogServiceInterface::class);
     }
 
     private function getExportClass(): ProductsExport|ProductReviewsExport|UsersExport
@@ -118,9 +116,19 @@ final class GenerateExcelReportJob implements ShouldQueue
 
     private function generateFileName(): string
     {
-        $timestamp = now()->format('Y-m-d_H-i-s');
+        /** @var string $dateFormat */
+        $dateFormat = config('reports.date_format', 'Y-m-d_H-i-s');
+        $timestamp = now()->format($dateFormat);
         $type = $this->reportLog->report_type->value;
 
         return "{$type}_report_{$timestamp}_{$this->reportLog->id}.xlsx";
+    }
+
+    private function getStoragePath(): string
+    {
+        /** @var string $path */
+        $path = config('reports.storage_path', 'reports');
+
+        return $path;
     }
 }

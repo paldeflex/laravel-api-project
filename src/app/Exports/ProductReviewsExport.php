@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exports;
 
+use App\Exports\Concerns\FormatsDateTime;
 use App\Models\ProductReview;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -18,6 +19,8 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
  */
 final class ProductReviewsExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
+    use FormatsDateTime;
+
     /**
      * @return Collection<int, ProductReview>
      */
@@ -32,12 +35,12 @@ final class ProductReviewsExport implements FromCollection, ShouldAutoSize, With
     public function headings(): array
     {
         return [
-            'ID',
-            'Product',
-            'User',
-            'Rating',
-            'Review Text',
-            'Created At',
+            __('exports.product_reviews.id'),
+            __('exports.product_reviews.product'),
+            __('exports.product_reviews.user'),
+            __('exports.product_reviews.rating'),
+            __('exports.product_reviews.comment'),
+            __('exports.product_reviews.created_at'),
         ];
     }
 
@@ -49,11 +52,11 @@ final class ProductReviewsExport implements FromCollection, ShouldAutoSize, With
     {
         return [
             $row->id,
-            $row->product !== null ? $row->product->name : '-',
-            $row->user !== null ? $row->user->name : '-',
+            $row->product->name ?? __('exports.common.empty'),
+            $row->user->name ?? __('exports.common.empty'),
             $row->rating,
-            $row->text ?? '-',
-            $row->created_at?->format('Y-m-d H:i:s'),
+            $row->text ?? __('exports.common.empty'),
+            $this->formatDateTime($row->created_at),
         ];
     }
 

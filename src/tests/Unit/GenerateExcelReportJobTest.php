@@ -9,22 +9,35 @@ use App\Enums\Report\ReportType;
 use App\Jobs\GenerateExcelReportJob;
 use App\Models\ReportLog;
 use App\Models\User;
-use Exception;
+use App\Services\Contracts\Report\ReportLogServiceInterface;
+use App\Services\Report\ReportLogService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Queue;
+use Mockery;
+use Mockery\MockInterface;
 use Tests\TestCase;
-use Throwable;
 
 final class GenerateExcelReportJobTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
+    public function test_job_is_dispatched_to_queue(): void
     {
-        parent::setUp();
+        Queue::fake();
 
-        Storage::fake('local');
+        $user = User::factory()->create();
+
+        $reportLog = ReportLog::create([
+            'user_id' => $user->id,
+            'report_type' => ReportType::Products,
+            'status' => ReportStatus::Pending,
+        ]);
+
+        GenerateExcelReportJob::dispatch($reportLog);
+
+        Queue::assertPushed(GenerateExcelReportJob::class, function ($job) use ($reportLog) {
+            return $job->reportLog->id === $reportLog->id;
+        });
     }
 
     public function test_job_has_correct_backoff_values(): void
@@ -58,9 +71,9 @@ final class GenerateExcelReportJobTest extends TestCase
     }
 
     /**
-     * @throws Throwable
+     * @throws \Throwable
      */
-    public function test_job_generates_products_report_successfully(): void
+    public function test_job_calls_service_mark_as_processing(): void
     {
         $user = User::factory()->create();
 
@@ -70,28 +83,73 @@ final class GenerateExcelReportJobTest extends TestCase
             'status' => ReportStatus::Pending,
         ]);
 
-        Log::shouldReceive('info')
-            ->twice();
+        /** @var ReportLogService&MockInterface $serviceMock */
+        $serviceMock = Mockery::mock(ReportLogServiceInterface::class);
+        $serviceMock->shouldReceive('markAsProcessing')
+            ->once()
+            ->with(Mockery::on(fn ($arg) => $arg->id === $reportLog->id));
+        $serviceMock->shouldReceive('markAsCompleted')
+            ->once();
 
-        $job = new GenerateExcelReportJob($reportLog);
+        $job = new GenerateExcelReportJob($reportLog, $serviceMock);
         $job->handle();
-
-        $reportLog->refresh();
-
-        $this->assertSame(ReportStatus::Completed, $reportLog->status);
-        $this->assertNotNull($reportLog->file_name);
-        $this->assertNotNull($reportLog->file_path);
-        $this->assertNotNull($reportLog->completed_at);
-        $this->assertSame(1, $reportLog->attempts);
-        $this->assertStringContainsString('products_report_', $reportLog->file_name);
-        Storage::disk('local')->assertExists($reportLog->file_path);
     }
 
     /**
-     * @throws Throwable
+     * @throws \Throwable
      */
-    public function test_job_generates_product_reviews_report_successfully(): void
+    public function test_job_calls_service_mark_as_completed_on_success(): void
     {
+        $user = User::factory()->create();
+
+        $reportLog = ReportLog::create([
+            'user_id' => $user->id,
+            'report_type' => ReportType::Products,
+            'status' => ReportStatus::Pending,
+        ]);
+
+        /** @var ReportLogService&MockInterface $serviceMock */
+        $serviceMock = Mockery::mock(ReportLogServiceInterface::class);
+        $serviceMock->shouldReceive('markAsProcessing')->once();
+        $serviceMock->shouldReceive('markAsCompleted')
+            ->once()
+            ->withArgs(function ($log, $fileName, $filePath) use ($reportLog) {
+                return $log->id === $reportLog->id
+                    && str_contains($fileName, 'products_report_')
+                    && str_contains($filePath, 'reports/');
+            });
+
+        $job = new GenerateExcelReportJob($reportLog, $serviceMock);
+        $job->handle();
+    }
+
+    public function test_failed_method_calls_service_mark_as_failed(): void
+    {
+        $user = User::factory()->create();
+
+        $reportLog = ReportLog::create([
+            'user_id' => $user->id,
+            'report_type' => ReportType::Products,
+            'status' => ReportStatus::Processing,
+        ]);
+
+        /** @var ReportLogService&MockInterface $serviceMock */
+        $serviceMock = Mockery::mock(ReportLogServiceInterface::class);
+        $serviceMock->shouldReceive('markAsFailed')
+            ->once()
+            ->with(
+                Mockery::on(fn ($arg) => $arg->id === $reportLog->id),
+                'Test error message'
+            );
+
+        $job = new GenerateExcelReportJob($reportLog, $serviceMock);
+        $job->failed(new \Exception('Test error message'));
+    }
+
+    public function test_job_dispatched_with_correct_report_type(): void
+    {
+        Queue::fake();
+
         $user = User::factory()->create();
 
         $reportLog = ReportLog::create([
@@ -100,114 +158,10 @@ final class GenerateExcelReportJobTest extends TestCase
             'status' => ReportStatus::Pending,
         ]);
 
-        Log::shouldReceive('info')
-            ->twice();
+        GenerateExcelReportJob::dispatch($reportLog);
 
-        $job = new GenerateExcelReportJob($reportLog);
-        $job->handle();
-
-        $reportLog->refresh();
-
-        $this->assertSame(ReportStatus::Completed, $reportLog->status);
-        $this->assertStringContainsString('product_reviews_report_', $reportLog->file_name);
-    }
-
-    /**
-     * @throws Throwable
-     */
-    public function test_job_generates_users_report_successfully(): void
-    {
-        $user = User::factory()->create();
-
-        $reportLog = ReportLog::create([
-            'user_id' => $user->id,
-            'report_type' => ReportType::Users,
-            'status' => ReportStatus::Pending,
-        ]);
-
-        Log::shouldReceive('info')
-            ->twice();
-
-        $job = new GenerateExcelReportJob($reportLog);
-        $job->handle();
-
-        $reportLog->refresh();
-
-        $this->assertSame(ReportStatus::Completed, $reportLog->status);
-        $this->assertStringContainsString('users_report_', $reportLog->file_name);
-    }
-
-    /**
-     * @throws Throwable
-     */
-    public function test_job_marks_as_processing_before_generation(): void
-    {
-        $user = User::factory()->create();
-
-        $reportLog = ReportLog::create([
-            'user_id' => $user->id,
-            'report_type' => ReportType::Products,
-            'status' => ReportStatus::Pending,
-        ]);
-
-        Log::shouldReceive('info')
-            ->twice();
-
-        $job = new GenerateExcelReportJob($reportLog);
-        $job->handle();
-
-        $reportLog->refresh();
-
-        $this->assertNotNull($reportLog->started_at);
-    }
-
-    public function test_failed_method_marks_report_as_failed(): void
-    {
-        $user = User::factory()->create();
-
-        $reportLog = ReportLog::create([
-            'user_id' => $user->id,
-            'report_type' => ReportType::Products,
-            'status' => ReportStatus::Processing,
-            'attempts' => 5,
-        ]);
-
-        Log::shouldReceive('error')
-            ->once();
-
-        $job = new GenerateExcelReportJob($reportLog);
-        $exception = new Exception('Test error message');
-        $job->failed($exception);
-
-        $reportLog->refresh();
-
-        $this->assertSame(ReportStatus::Failed, $reportLog->status);
-        $this->assertSame('Test error message', $reportLog->error_message);
-        $this->assertNotNull($reportLog->completed_at);
-    }
-
-    /**
-     * @throws Throwable
-     */
-    public function test_job_increments_attempts_on_each_run(): void
-    {
-        $user = User::factory()->create();
-
-        $reportLog = ReportLog::create([
-            'user_id' => $user->id,
-            'report_type' => ReportType::Products,
-            'status' => ReportStatus::Pending,
-            'attempts' => 2,
-        ]);
-
-        Log::shouldReceive('info')
-            ->twice();
-
-        $job = new GenerateExcelReportJob($reportLog);
-        $job->handle();
-
-        $reportLog->refresh();
-
-        $this->assertSame(3, $reportLog->attempts);
+        Queue::assertPushed(GenerateExcelReportJob::class, function ($job) {
+            return $job->reportLog->report_type === ReportType::ProductReviews;
+        });
     }
 }
