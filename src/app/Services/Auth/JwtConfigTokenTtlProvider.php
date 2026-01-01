@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Auth;
 
-use App\Services\Contracts\Auth\TokenTtlProviderInterface;
 use App\Exceptions\Auth\InvalidJwtConfigException;
+use App\Services\Contracts\Auth\TokenTtlProviderInterface;
 
 final class JwtConfigTokenTtlProvider implements TokenTtlProviderInterface
 {

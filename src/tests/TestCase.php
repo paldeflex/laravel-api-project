@@ -4,10 +4,12 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
+    use MockeryPHPUnitIntegration;
 
     private static bool $migrationsRun = false;
 
