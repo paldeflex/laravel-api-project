@@ -20,6 +20,9 @@ use App\Services\Contracts\Products\ProductImageStorageInterface;
 use App\Services\Products\ProductImageStorage;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use App\Services\Contracts\Report\ReportLogServiceInterface;
+use App\Services\Report\ReportLogService;
+
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -43,6 +46,11 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(
             UserRepositoryInterface::class,
             UserRepository::class,
+        );
+
+        $this->app->singleton(
+            ReportLogServiceInterface::class,
+            ReportLogService::class,
         );
 
         $this->app->singleton(

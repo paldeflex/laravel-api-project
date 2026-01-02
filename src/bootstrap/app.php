@@ -83,12 +83,5 @@ return Application::configure(basePath: dirname(__DIR__))
                 $code
             );
         });
-
-        $exceptions->render(function (Throwable $e, Request $request) {
-            return response()->json(
-                ['message' => 'Внутренняя ошибка сервера'],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        });
     })
     ->create();
