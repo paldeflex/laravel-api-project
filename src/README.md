@@ -17,6 +17,7 @@
 
 ```bash
 composer install
+```
 
 ### 2. Конфиг окружения
 
@@ -29,33 +30,52 @@ cp .env.example .env
 Потом в `.env` настроить:
 
 * параметры подключения к БД (`DB_*`)
-* JWT-секрет:
+* Сгенерировать ключ приложения:
+
+  ```bash
+  php artisan key:generate
+  ```
+
+* **JWT-секрет (обязательно!)**:
 
   ```bash
   php artisan jwt:secret
   ```
 
+  > Без этого шага приложение не будет работать — аутентификация требует JWT_SECRET.
+
 ### 3. Docker
 
-Поднять контейнеры:
+Поднять контейнеры (из корня проекта):
 
 ```bash
 docker compose up -d
+# или через Makefile:
+make up
 ```
 
-Выполнить миграции (и, при необходимости, сиды):
+Войти в контейнер PHP:
 
 ```bash
-docker compose exec php php artisan migrate
-# docker compose exec php php artisan db:seed
+make shell
 ```
 
-### 4. Запуск сервера
-
-Локально через artisan:
+Выполнить миграции:
 
 ```bash
-docker compose exec php php artisan serve --host=0.0.0.0 --port=8000
+php artisan migrate
+# или с сидами:
+php artisan migrate --seed
+```
+
+### 4. Доступ к API
+
+При использовании Docker + Nginx, API доступен по: `http://localhost/api`
+
+Если запускаете через artisan serve:
+
+```bash
+php artisan serve --host=0.0.0.0 --port=8000
 ```
 
 API будет доступен по `http://localhost:8000/api`.
@@ -313,19 +333,27 @@ API будет доступен по `http://localhost:8000/api`.
     * `AuthControllerTest` — регистрация, логин, me, logout.
     * `ProductControllerTest` — публичный список/просмотр, права админа, рейтинг, доступ к черновикам.
     * `ProductReviewControllerTest` — создание/обновление/удаление отзывов, политика и мидлвары.
+    * `ReportControllerTest` — создание и скачивание Excel-отчётов.
 
 * **Unit-тесты**:
 
     * `ProductServiceTest` — выборка опубликованных товаров, работа с картинками, soft delete.
     * `ProductReviewServiceTest` — создание/обновление/удаление отзывов через сервис.
-    * При необходимости можно добавить отдельные тесты на политику и middleware.
+    * `TelegramAdapterTest`, `TelegramLogHandlerTest`, `TelegramLogListenerTest` — логирование в Telegram.
+    * `GenerateExcelReportJobTest` — генерация Excel-отчётов.
 
-Запуск тестов:
+### Запуск тестов
 
 ```bash
-docker compose exec php php artisan test
-# или
-docker compose exec php ./vendor/bin/phpunit
+# Через composer (рекомендуется)
+composer test
+
+# Или напрямую
+php artisan test
+./vendor/bin/phpunit
 ```
+
+> **Примечание**: JWT_SECRET для тестов настроен в `phpunit.xml`.
+> Отдельная настройка `.env.testing` не требуется.
 
 ---
